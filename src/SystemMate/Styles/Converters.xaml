@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:helpers="using:SystemMate.Helpers">
+
+    <helpers:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    <helpers:PercentConverter x:Key="PercentConverter" />
+    <helpers:ByteSizeConverter x:Key="ByteSizeConverter" />
+    <helpers:DateTimeDisplayConverter x:Key="DateTimeDisplayConverter" />
+
+</ResourceDictionary>

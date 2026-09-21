@@ -1,0 +1,39 @@
+## .NET / C#
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.cache
+.DS_Store
+
+## Build artifacts
+artifacts/
+publish/
+*.nupkg
+*.snupkg
+
+## Packaging
+AppPackages/
+BundleArtifacts/
+*.msix
+*.appx
+*.cer
+*.pfx
+
+## Test results
+TestResults/
+coverage/
+*.trx
+*.coveragexml
+
+## IDE
+.idea/
+*.DotSettings.user
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+## OS
+Thumbs.db
+Desktop.ini

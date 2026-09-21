@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="SystemMate.Views.CleanerPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:SystemMate.Models"
+    mc:Ignorable="d"
+    Background="{StaticResource AppBackgroundBrush}">
+
+    <ScrollViewer Padding="32,28,32,32">
+        <StackPanel Spacing="24">
+
+            <!-- ── Header ─────────────────────────────────────────── -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Cleaner" Style="{StaticResource PageTitleStyle}" />
+                    <TextBlock Text="To clean first, find second. SystemMate never removes anything silently."
+                               Style="{StaticResource BodyStyle}"
+                               Margin="0,4,0,0" />
+                </StackPanel>
+
+                <!-- Scan button -->
+                <Button Grid.Column="1"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{x:Bind ViewModel.ScanCommand}"
+                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <SymbolIcon Symbol="Find" />
+                        <TextBlock Text="Scan" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- ── Status bar ─────────────────────────────────────── -->
+            <Border Style="{StaticResource ContentCardStyle}" Padding="20,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ProgressRing IsActive="{x:Bind ViewModel.IsScanning, Mode=OneWay}"
+                                      Width="20" Height="20"
+                                      Foreground="{StaticResource AccentBlueBrush}" />
+                        <ProgressRing IsActive="{x:Bind ViewModel.IsCleaning, Mode=OneWay}"
+                                      Width="20" Height="20"
+                                      Foreground="{StaticResource AccentAmberBrush}" />
+                        <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource TextSecondaryBrush}" />
+                    </StackPanel>
+
+                    <!-- Size summary (shown after scan) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="24"
+                                Visibility="{x:Bind ViewModel.HasScanResult, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <StackPanel>
+                            <TextBlock Text="{x:Bind ViewModel.TotalSizeDisplay, Mode=OneWay}"
+                                       FontSize="22" FontWeight="Bold"
+                                       Foreground="{StaticResource AccentBlueBrush}" />
+                            <TextBlock Text="found"
+                                       Style="{StaticResource CaptionStyle}" />
+                        </StackPanel>
+                        <StackPanel>
+                            <TextBlock Text="{x:Bind ViewModel.TotalFileCount, Mode=OneWay}"
+                                       FontSize="22" FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                            <TextBlock Text="files"
+                                       Style="{StaticResource CaptionStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- ── Category list (shown after scan) ──────────────── -->
+            <Border Style="{StaticResource ContentCardStyle}"
+                    Visibility="{x:Bind ViewModel.HasScanResult, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Spacing="0">
+
+                    <!-- Column headers -->
+                    <Grid Padding="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="1" Text="CATEGORY"
+                                   Style="{StaticResource SectionLabelStyle}" />
+                        <TextBlock Grid.Column="2" Text="FILES"
+                                   Style="{StaticResource SectionLabelStyle}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="3" Text="SIZE"
+                                   Style="{StaticResource SectionLabelStyle}"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" Margin="0,0,0,8" />
+
+                    <!-- Category rows -->
+                    <ItemsControl ItemsSource="{x:Bind ViewModel.Categories, Mode=OneWay}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="models:CleanupCategory">
+                                <Grid Padding="0,10" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="32" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="80" />
+                                        <ColumnDefinition Width="80" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <CheckBox Grid.Column="0"
+                                              IsChecked="{x:Bind IsSelected, Mode=TwoWay}"
+                                              VerticalAlignment="Center" />
+
+                                    <StackPanel Grid.Column="1" Spacing="2">
+                                        <TextBlock Text="{x:Bind DisplayName}"
+                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   FontWeight="Medium" />
+                                        <TextBlock Text="{x:Bind Description}"
+                                                   Style="{StaticResource CaptionStyle}" />
+                                    </StackPanel>
+
+                                    <TextBlock Grid.Column="2"
+                                               Text="{x:Bind FileCount}"
+                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center" />
+
+                                    <TextBlock Grid.Column="3"
+                                               Text="{x:Bind SizeDisplay}"
+                                               Foreground="{StaticResource AccentBlueBrush}"
+                                               FontWeight="SemiBold"
+                                               HorizontalAlignment="Right"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+
+                    <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" Margin="0,8,0,16" />
+
+                    <!-- Clean button row -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <SymbolIcon Symbol="Accept"
+                                        Foreground="{StaticResource AccentGreenBrush}" />
+                            <TextBlock Text="A history record will be created before cleanup. Previous files cannot be restored automatically."
+                                       Style="{StaticResource CaptionStyle}"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+
+                        <Button Grid.Column="1"
+                                Style="{StaticResource PrimaryButtonStyle}"
+                                Command="{x:Bind ViewModel.CleanCommand}"
+                                Click="CleanSelectedClick">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <SymbolIcon Symbol="Delete" />
+                                <TextBlock Text="Clean selected" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                </StackPanel>
+            </Border>
+
+            <!-- ── Clean progress ─────────────────────────────────── -->
+            <Border Style="{StaticResource ContentCardStyle}"
+                    Visibility="{x:Bind ViewModel.IsCleaning, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Cleaning in progress…"
+                               FontWeight="SemiBold"
+                               Foreground="{StaticResource TextPrimaryBrush}" />
+                    <ProgressBar Value="{x:Bind ViewModel.ProgressDone, Mode=OneWay}"
+                                 Maximum="{x:Bind ViewModel.ProgressTotal, Mode=OneWay}"
+                                 Height="6"
+                                 CornerRadius="3"
+                                 Foreground="{StaticResource AccentBlueBrush}" />
+                    <TextBlock Text="{x:Bind ViewModel.ProgressFile, Mode=OneWay}"
+                               Style="{StaticResource CaptionStyle}"
+                               TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
