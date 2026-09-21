@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="SystemMate.Controls.HealthRow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid ColumnSpacing="12">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="10" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Status dot -->
+        <Ellipse Width="8" Height="8"
+                 x:Name="StatusDot"
+                 VerticalAlignment="Center"
+                 Fill="{StaticResource AccentGreenBrush}" />
+
+        <StackPanel Grid.Column="1">
+            <TextBlock x:Name="LabelText"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       FontWeight="Medium" />
+            <TextBlock x:Name="DetailText"
+                       Style="{StaticResource CaptionStyle}" />
+        </StackPanel>
+
+        <SymbolIcon Grid.Column="2"
+                    x:Name="StatusIcon"
+                    Symbol="Accept"
+                    Foreground="{StaticResource AccentGreenBrush}"
+                    VerticalAlignment="Center" />
+    </Grid>
+</UserControl>
