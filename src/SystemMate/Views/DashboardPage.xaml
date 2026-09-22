@@ -133,21 +133,21 @@
                                    Style="{StaticResource CaptionStyle}" />
 
                         <StackPanel Spacing="12">
-                            <HealthRow Label="Junk files"
-                                       Detail="Scan to check"
-                                       Status="neutral" />
-                            <HealthRow Label="Startup apps"
-                                       Detail="Review in Startup Manager"
-                                       Status="neutral" />
-                            <HealthRow Label="Windows Update"
-                                       Detail="Up to date"
-                                       Status="good" />
-                            <HealthRow Label="Network"
-                                       Detail="Connected"
-                                       Status="good" />
-                            <HealthRow Label="Drive health"
-                                       Detail="{x:Bind ViewModel.DiskHealth, Mode=OneWay}"
-                                       Status="good" />
+                            <controls:HealthRow Label="Junk files"
+                                                Detail="Scan to check"
+                                                Status="neutral" />
+                            <controls:HealthRow Label="Startup apps"
+                                                Detail="Review in Startup Manager"
+                                                Status="neutral" />
+                            <controls:HealthRow Label="Windows Update"
+                                                Detail="Up to date"
+                                                Status="good" />
+                            <controls:HealthRow Label="Network"
+                                                Detail="Connected"
+                                                Status="good" />
+                            <controls:HealthRow Label="Drive health"
+                                                Detail="{x:Bind ViewModel.DiskHealth, Mode=OneWay}"
+                                                Status="good" />
                         </StackPanel>
                     </StackPanel>
                 </Border>

@@ -2,48 +2,51 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <!-- .NET 8 LTS — stable, matches VS tooling on this machine -->
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <RootNamespace>SystemMate</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Platforms>x86;x64;arm64</Platforms>
     <RuntimeIdentifiers>win-x86;win-x64;win-arm64</RuntimeIdentifiers>
-    <PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
     <UseWinUI>true</UseWinUI>
     <EnableMsixTooling>true</EnableMsixTooling>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
     <AssemblyName>SystemMate</AssemblyName>
     <Version>0.1.0</Version>
     <Authors>SystemMate</Authors>
     <Description>A professional Windows system utility</Description>
+    <LangVersion>latest</LangVersion>
+
+    <!-- Suppress warnings from generated MVVM source code -->
+    <NoWarn>$(NoWarn);MVVMTK0034</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- Windows App SDK / WinUI 3 -->
-    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250228002" />
-    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" VersionOverride="10.0.26100.1742" />
+    <!-- Windows App SDK / WinUI 3 (PrivateAssets prevents build targets leaking to test project) -->
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250402001" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" VersionOverride="10.0.26100.1742" PrivateAssets="all" />
 
     <!-- MVVM -->
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
 
-    <!-- WinUI Community Toolkit -->
-    <PackageReference Include="CommunityToolkit.WinUI.Controls.Segmented" Version="8.1.240916" />
+    <!-- WinUI Community Toolkit converters -->
     <PackageReference Include="CommunityToolkit.WinUI.Converters" Version="8.1.240916" />
 
     <!-- SQLite -->
-    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.5" />
 
-    <!-- Hardware monitoring -->
-    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.4" />
+    <!-- WMI & Diagnostics -->
+    <PackageReference Include="System.Management" Version="8.0.0" />
+    <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\**">
+    <Content Include="Assets\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
 </Project>

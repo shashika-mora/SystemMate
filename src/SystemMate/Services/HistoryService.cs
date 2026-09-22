@@ -7,10 +7,13 @@ namespace SystemMate.Services;
 /// Persists and retrieves cleanup operation records using SQLite.
 /// Database lives in %LOCALAPPDATA%\SystemMate\history.db
 /// </summary>
-public sealed class HistoryService
+public class HistoryService : IDisposable
 {
     private readonly string _dbPath;
     private readonly string _connectionString;
+
+    // Called by xUnit test teardown — SQLite connections are per-operation so nothing to release
+    public void Dispose() { }
 
     public HistoryService()
     {
@@ -23,8 +26,8 @@ public sealed class HistoryService
         InitializeDatabase();
     }
 
-    /// <summary>Internal constructor for unit tests — accepts a custom connection string.</summary>
-    internal HistoryService(string connectionString)
+    /// <summary>Protected constructor for unit tests — accepts a custom connection string.</summary>
+    protected HistoryService(string connectionString)
     {
         _dbPath = string.Empty;
         _connectionString = connectionString;
@@ -96,8 +99,9 @@ public sealed class HistoryService
                 SELECT SessionId, Timestamp, Category, FilePath, SizeBytes, Status, ErrorMessage, Id
                 FROM CleanupOperations
                 WHERE SessionId IN (
-                    SELECT DISTINCT SessionId FROM CleanupOperations
-                    ORDER BY MIN(Timestamp) DESC
+                    SELECT SessionId FROM CleanupOperations
+                    GROUP BY SessionId
+                    ORDER BY MAX(Timestamp) DESC
                     LIMIT $limit
                 )
                 ORDER BY Timestamp DESC

@@ -45,7 +45,7 @@ public sealed class CleanerModelTests
     [Theory]
     [InlineData(500, "500 B")]
     [InlineData(1_500, "1 KB")]
-    [InlineData(1_500_000, "1 MB")]
+    [InlineData(1_500_000, "1.4 MB")]
     [InlineData(1_500_000_000, "1.40 GB")]
     public void ScanResult_TotalSizeDisplay_FormatsCorrectly(long bytes, string expected)
     {

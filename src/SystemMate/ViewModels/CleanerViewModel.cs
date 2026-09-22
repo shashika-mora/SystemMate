@@ -11,15 +11,26 @@ public sealed partial class CleanerViewModel : ObservableObject
     private readonly CleanerService _cleaner;
     private ScanResult? _lastScan;
 
-    [ObservableProperty] private bool _isScanning;
-    [ObservableProperty] private bool _isCleaning;
-    [ObservableProperty] private bool _hasScanResult;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanCleanNow))]
+    private bool _isScanning;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanCleanNow))]
+    private bool _isCleaning;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanCleanNow))]
+    private bool _hasScanResult;
+
     [ObservableProperty] private string _statusMessage = "Ready to scan. SystemMate never removes anything silently.";
     [ObservableProperty] private string _totalSizeDisplay = "0 MB";
     [ObservableProperty] private int _totalFileCount;
     [ObservableProperty] private string _progressFile = string.Empty;
     [ObservableProperty] private int _progressDone;
     [ObservableProperty] private int _progressTotal;
+
+    public bool CanCleanNow => CanClean();
 
     public ObservableCollection<CleanupCategory> Categories { get; } = new();
 

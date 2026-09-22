@@ -6,8 +6,8 @@
 
 **A professional Windows system utility. Clean. Fast. Honest.**
 
-[![Build](https://github.com/YOURUSERNAME/SystemMate/actions/workflows/build.yml/badge.svg)](https://github.com/YOURUSERNAME/SystemMate/actions/workflows/build.yml)
-[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
+[![Build](https://github.com/shashika-mora/SystemMate/actions/workflows/build.yml/badge.svg)](https://github.com/shashika-mora/SystemMate/actions/workflows/build.yml)
+[![.NET](https://img.shields.io/badge/.NET-8.0%20LTS-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![WinUI 3](https://img.shields.io/badge/WinUI-3-0078D4?logo=windows)](https://learn.microsoft.com/windows/apps/winui/winui3/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue?logo=windows)](https://www.microsoft.com/windows)
@@ -46,7 +46,7 @@ Cleaner.ScanAsync()          ← read-only, nothing touched
             │
     User reviews + approves
             │
-Cleaner.CleanAsync()
+    Cleaner.CleanAsync()
     │
     ├── HistoryService.Log() ← written to SQLite BEFORE any deletion
     ├── File.Delete()
@@ -59,8 +59,8 @@ A record is written to the database **before** each file is removed. If the app 
 
 | Layer | Technology |
 |---|---|
-| Language | C# 13 |
-| Runtime | .NET 10 |
+| Language | C# 12 |
+| Runtime | .NET 8 LTS |
 | UI Framework | WinUI 3 / Windows App SDK 1.6 |
 | MVVM | CommunityToolkit.Mvvm 8 (source generators) |
 | Database | SQLite via Microsoft.Data.Sqlite |
@@ -76,16 +76,16 @@ A record is written to the database **before** each file is removed. If the app 
 | v0.2 | Startup Manager (registry + startup folder + scheduled tasks) |
 | v0.3 | Storage Analyzer (large files · duplicates · directory tree) |
 | v0.4 | Network Tools · Windows Repair (SFC, DISM, DNS) |
-| v0.5 | SystemMate Doctor — AI diagnostics (offline, local inference) |
+| v0.5 | Advanced Diagnostics & Rule Engine (offline, deterministic) |
 
 ## Build & Run
 
 ```powershell
-# Prerequisites
-winget install Microsoft.DotNet.SDK.10
+# Prerequisites (.NET 8 SDK)
+winget install Microsoft.DotNet.SDK.8
 
 # Clone
-git clone https://github.com/YOURUSERNAME/SystemMate.git
+git clone https://github.com/shashika-mora/SystemMate.git
 cd SystemMate
 
 # Run tests

@@ -164,7 +164,7 @@
 
                         <Button Grid.Column="1"
                                 Style="{StaticResource PrimaryButtonStyle}"
-                                Command="{x:Bind ViewModel.CleanCommand}"
+                                IsEnabled="{x:Bind ViewModel.CanCleanNow, Mode=OneWay}"
                                 Click="CleanSelectedClick">
                             <StackPanel Orientation="Horizontal" Spacing="8">
                                 <SymbolIcon Symbol="Delete" />

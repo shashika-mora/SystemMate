@@ -1,4 +1,4 @@
-using Microsoft.UI.Xaml;
+// No WinUI dependency — settings persistence is pure .NET
 
 namespace SystemMate.Services;
 

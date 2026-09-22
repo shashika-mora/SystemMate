@@ -10,9 +10,7 @@ public sealed class CleanerService
 {
     private readonly HistoryService _history;
 
-    public CleanerService() : this(App.History) { }
-
-    internal CleanerService(HistoryService history)
+    public CleanerService(HistoryService history)
     {
         _history = history;
     }

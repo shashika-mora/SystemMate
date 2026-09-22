@@ -12,34 +12,37 @@ namespace SystemMate.Tests;
 public sealed class HistoryServiceTests : IDisposable
 {
     // Use a named in-memory SQLite database so multiple connections share the same instance
-    private readonly string _connStr = "Data Source=history_test;Mode=Memory;Cache=Shared";
+    private readonly string _connStr = $"Data Source=history_test_{Guid.NewGuid():N};Mode=Memory;Cache=Shared";
+    private readonly SqliteConnection _keepAliveConn;
     private readonly TestHistoryService _svc;
 
     public HistoryServiceTests()
     {
+        _keepAliveConn = new SqliteConnection(_connStr);
+        _keepAliveConn.Open();
         _svc = new TestHistoryService(_connStr);
     }
 
     [Fact]
-    public void LogOperation_InsertsRecord()
+    public async Task LogOperation_InsertsRecord()
     {
         var record = MakeRecord("session1", OperationStatus.Deleted, 1024);
         _svc.LogOperation(record);
 
-        var sessions = _svc.GetSessionsAsync().GetAwaiter().GetResult();
+        var sessions = await _svc.GetSessionsAsync();
         Assert.Single(sessions);
         Assert.Single(sessions[0].Records);
         Assert.Equal(1024, sessions[0].Records[0].SizeBytes);
     }
 
     [Fact]
-    public void LogOperation_MultipleRecords_AggregatesCorrectly()
+    public async Task LogOperation_MultipleRecords_AggregatesCorrectly()
     {
         _svc.LogOperation(MakeRecord("s1", OperationStatus.Deleted, 500_000));
         _svc.LogOperation(MakeRecord("s1", OperationStatus.Deleted, 300_000));
         _svc.LogOperation(MakeRecord("s1", OperationStatus.Error, 0));
 
-        var sessions = _svc.GetSessionsAsync().GetAwaiter().GetResult();
+        var sessions = await _svc.GetSessionsAsync();
         Assert.Single(sessions);
         var session = sessions[0];
         Assert.Equal(800_000, session.TotalBytesFreed);
@@ -84,7 +87,11 @@ public sealed class HistoryServiceTests : IDisposable
             Status       = status,
         };
 
-    public void Dispose() => _svc.Dispose();
+    public void Dispose()
+    {
+        _svc.Dispose();
+        _keepAliveConn.Dispose();
+    }
 
     // Testable subclass that uses injected connection string
     private sealed class TestHistoryService : HistoryService

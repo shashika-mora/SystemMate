@@ -15,6 +15,8 @@ public sealed partial class CleanerPage : Page
 
     private async void CleanSelectedClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
     {
+        if (!ViewModel.CanCleanNow) return;
+
         // Show confirmation dialog before any deletion
         if (App.Settings.GetConfirmBeforeDelete())
         {
