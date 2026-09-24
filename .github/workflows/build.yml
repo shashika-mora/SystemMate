@@ -50,9 +50,6 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
-      - name: Install Windows App SDK workload
-        run: dotnet workload install microsoft-windows-sdk-net
-
       - name: Restore solution
         run: dotnet restore src/SystemMate/SystemMate.csproj
 
