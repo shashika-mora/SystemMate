@@ -40,3 +40,13 @@ Desktop.ini
 
 ## Legacy scratch
 Tweak-LK/
+
+## Workspace collaboration
+.workspace/
+!.workspace/
+!.workspace/README.md
+!.workspace/templates/
+!.workspace/templates/**
+!.workspace/logs/
+!.workspace/logs/README.md
+!.workspace/logs/activity-template.md

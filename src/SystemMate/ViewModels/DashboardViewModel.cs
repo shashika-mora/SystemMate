@@ -63,7 +63,7 @@ public sealed partial class DashboardViewModel : ObservableObject, IDisposable
         CpuName        = snap.CpuName.Length > 45
             ? snap.CpuName[..42] + "…"
             : snap.CpuName;
-        DiskHealth     = snap.DiskHealthStatus ?? "Good";
+        DiskHealth     = snap.DiskHealthStatus ?? "Unavailable";
 
         // RAM: "7.1 / 16 GB"
         var usedGb  = snap.RamUsedBytes  / 1_073_741_824.0;

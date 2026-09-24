@@ -23,6 +23,7 @@
     <Compile Include="..\..\src\SystemMate\Models\*.cs" LinkBase="Models" />
     <Compile Include="..\..\src\SystemMate\Services\HistoryService.cs" LinkBase="Services" />
     <Compile Include="..\..\src\SystemMate\Services\CleanerService.cs" LinkBase="Services" />
+    <Compile Include="..\..\src\SystemMate\Services\SettingsService.cs" LinkBase="Services" />
   </ItemGroup>
 
 </Project>

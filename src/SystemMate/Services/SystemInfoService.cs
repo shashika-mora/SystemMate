@@ -49,7 +49,7 @@ public sealed class SystemInfoService : IDisposable
                 OsVersion         = osVersion,
                 MachineName       = machineName,
                 CpuName           = cpuName,
-                DiskHealthStatus  = "Good" // placeholder; v0.2 will use SMART via WMI
+                DiskHealthStatus  = null
             };
         });
     }

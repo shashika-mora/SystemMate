@@ -10,8 +10,25 @@ public sealed partial class HistoryPage : Page
 
     public HistoryPage()
     {
-        ViewModel = new HistoryViewModel(App.History);
+        ViewModel = new HistoryViewModel(App.History, App.Settings)
+        {
+            ConfirmClearAsync = ConfirmClearAsync
+        };
         this.InitializeComponent();
+    }
+
+    private async Task<bool> ConfirmClearAsync()
+    {
+        var dialog = new ContentDialog
+        {
+            Title = "Clear history?",
+            Content = "This permanently removes all cleanup history.",
+            PrimaryButtonText = "Clear",
+            CloseButtonText = "Cancel",
+            DefaultButton = ContentDialogButton.Close,
+            XamlRoot = XamlRoot
+        };
+        return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e)
