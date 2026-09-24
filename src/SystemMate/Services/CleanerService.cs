@@ -145,6 +145,7 @@ public sealed class CleanerService
         while (pending.Count > 0)
         {
             var directory = pending.Pop();
+            var filesToReturn = new List<string>();
             DirectoryInfo directoryInfo;
             try
             {
@@ -155,7 +156,7 @@ public sealed class CleanerService
                 foreach (var file in directoryInfo.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
                 {
                     if ((file.Attributes & FileAttributes.ReparsePoint) == 0)
-                        yield return file.FullName;
+                        filesToReturn.Add(file.FullName);
                 }
 
                 foreach (var child in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
@@ -168,6 +169,9 @@ public sealed class CleanerService
             {
                 progress?.Report($"Could not scan {directory}: {ex.Message}");
             }
+
+            foreach (var file in filesToReturn)
+                yield return file;
         }
     }
 
