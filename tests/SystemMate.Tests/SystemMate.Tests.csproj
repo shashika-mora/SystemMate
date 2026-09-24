@@ -22,6 +22,7 @@
     <!-- Include headless models and services directly to test business logic without WinUI packaging dependencies -->
     <Compile Include="..\..\src\SystemMate\Models\*.cs" LinkBase="Models" />
     <Compile Include="..\..\src\SystemMate\Services\HistoryService.cs" LinkBase="Services" />
+    <Compile Include="..\..\src\SystemMate\Services\CleanerService.cs" LinkBase="Services" />
     <Compile Include="..\..\src\SystemMate\Services\SettingsService.cs" LinkBase="Services" />
   </ItemGroup>
 
