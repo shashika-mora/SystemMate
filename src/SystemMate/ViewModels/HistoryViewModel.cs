@@ -37,7 +37,10 @@ public sealed partial class HistoryViewModel : ObservableObject
         {
             var sessions = await _history.GetSessionsAsync();
             foreach (var s in sessions)
+            {
+                s.ShowFileDetails = ShowFileDetails;
                 Sessions.Add(s);
+            }
 
             IsEmpty = Sessions.Count == 0;
             StatusMessage = Sessions.Count == 0
