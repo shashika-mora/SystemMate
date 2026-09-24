@@ -4,7 +4,7 @@ namespace SystemMate.Services;
 
 /// <summary>
 /// Scans well-known junk locations and deletes selected files.
-/// Scan is fully read-only. Deletion logs to HistoryService before touching any file.
+/// Scan is fully read-only. Deletion validates every path immediately before touching it.
 /// </summary>
 public sealed class CleanerService
 {
@@ -40,7 +40,7 @@ public sealed class CleanerService
             {
                 progress?.Report($"Scanning {cat.DisplayName}…");
                 var paths = GetScanPaths(cat.Id);
-                ScanPaths(paths, cat);
+                ScanPaths(paths, cat, progress);
             }
         });
 
@@ -99,7 +99,10 @@ public sealed class CleanerService
         _ => []
     };
 
-    private static void ScanPaths(IEnumerable<string> paths, CleanupCategory category)
+    private static void ScanPaths(
+        IEnumerable<string> paths,
+        CleanupCategory category,
+        IProgress<string>? progress = null)
     {
         if (category.Id == "recycle_bin")
         {
@@ -112,8 +115,7 @@ public sealed class CleanerService
             if (!Directory.Exists(dir)) continue;
             try
             {
-                var files = Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories);
-                foreach (var file in files)
+                foreach (var file in EnumerateFilesSafely(dir, progress))
                 {
                     try
                     {
@@ -126,7 +128,46 @@ public sealed class CleanerService
                     catch { /* locked / access denied — skip */ }
                 }
             }
-            catch { /* directory inaccessible — skip */ }
+            catch (Exception ex)
+            {
+                progress?.Report($"Could not scan {dir}: {ex.Message}");
+            }
+        }
+    }
+
+    private static IEnumerable<string> EnumerateFilesSafely(
+        string root,
+        IProgress<string>? progress)
+    {
+        var pending = new Stack<string>();
+        pending.Push(root);
+
+        while (pending.Count > 0)
+        {
+            var directory = pending.Pop();
+            DirectoryInfo directoryInfo;
+            try
+            {
+                directoryInfo = new DirectoryInfo(directory);
+                if ((directoryInfo.Attributes & FileAttributes.ReparsePoint) != 0)
+                    continue;
+
+                foreach (var file in directoryInfo.EnumerateFiles("*", SearchOption.TopDirectoryOnly))
+                {
+                    if ((file.Attributes & FileAttributes.ReparsePoint) == 0)
+                        yield return file.FullName;
+                }
+
+                foreach (var child in directoryInfo.EnumerateDirectories("*", SearchOption.TopDirectoryOnly))
+                {
+                    if ((child.Attributes & FileAttributes.ReparsePoint) == 0)
+                        pending.Push(child.FullName);
+                }
+            }
+            catch (Exception ex)
+            {
+                progress?.Report($"Could not scan {directory}: {ex.Message}");
+            }
         }
     }
 
@@ -140,8 +181,7 @@ public sealed class CleanerService
             if (!Directory.Exists(recyclePath)) continue;
             try
             {
-                foreach (var file in Directory.EnumerateFiles(recyclePath, "*",
-                    SearchOption.AllDirectories))
+                foreach (var file in EnumerateFilesSafely(recyclePath, null))
                 {
                     try
                     {
@@ -176,12 +216,12 @@ public sealed class CleanerService
 
         var selectedCategories = scanResult.Categories.Where(c => c.IsSelected).ToList();
         var allFiles = selectedCategories.SelectMany(c =>
-            c.FilePaths.Select(f => (File: f, Category: c.DisplayName))).ToList();
+            c.FilePaths.Select(f => (File: f, Category: c.DisplayName, CategoryId: c.Id))).ToList();
         int total = allFiles.Count, done = 0;
 
         await Task.Run(() =>
         {
-            foreach (var (filePath, categoryName) in allFiles)
+            foreach (var (filePath, categoryName, categoryId) in allFiles)
             {
                 done++;
                 progress?.Report((filePath, done, total));
@@ -196,37 +236,90 @@ public sealed class CleanerService
 
                 try
                 {
-                    var info = new FileInfo(filePath);
-                    record.SizeBytes = info.Exists ? info.Length : 0;
-
-                    // Log BEFORE deletion — guarantees history even on crash
-                    record.Status = OperationStatus.Deleted;
-                    _history.LogOperation(record);
-
-                    if (info.Exists)
+                    var roots = GetScanPaths(categoryId);
+                    if (categoryId == "recycle_bin")
+                        roots = DriveInfo.GetDrives().Where(d => d.IsReady)
+                            .Select(d => Path.Combine(d.RootDirectory.FullName, "$Recycle.Bin"));
+                    if (!IsSafeCandidate(filePath, roots))
                     {
-                        File.Delete(filePath);
-                        session.TotalBytesFreed += record.SizeBytes;
-                        session.FilesDeleted++;
+                        record.Status = OperationStatus.Skipped;
+                        record.ErrorMessage = "Path is outside the cleanup root or is a reparse point.";
+                        session.FilesSkipped++;
                     }
                     else
                     {
-                        record.Status = OperationStatus.Skipped;
-                        session.FilesSkipped++;
+                        var info = new FileInfo(filePath);
+                        if (!info.Exists)
+                        {
+                            record.Status = OperationStatus.Skipped;
+                            session.FilesSkipped++;
+                        }
+                        else
+                        {
+                            record.SizeBytes = info.Length;
+                            if (!IsSafeCandidate(filePath, roots))
+                            {
+                                record.Status = OperationStatus.Skipped;
+                                record.ErrorMessage = "Path changed before deletion and is no longer safe.";
+                                session.FilesSkipped++;
+                            }
+                            else
+                            {
+                                File.Delete(filePath);
+                                record.Status = OperationStatus.Deleted;
+                                session.TotalBytesFreed += record.SizeBytes;
+                                session.FilesDeleted++;
+                            }
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
                     record.Status = OperationStatus.Error;
                     record.ErrorMessage = ex.Message;
-                    _history.LogOperation(record);
                     session.FilesErrored++;
                 }
 
+                _history.LogOperation(record);
                 session.Records.Add(record);
             }
         });
 
         return session;
     }
+
+    private static bool IsSafeCandidate(string filePath, IEnumerable<string> roots)
+    {
+        var fullPath = Path.GetFullPath(filePath);
+        var fileInfo = new FileInfo(fullPath);
+        if (!fileInfo.Exists || (fileInfo.Attributes & FileAttributes.ReparsePoint) != 0)
+            return false;
+
+        foreach (var root in roots)
+        {
+            var fullRoot = Path.GetFullPath(root)
+                .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            if (!IsDescendant(fullPath, fullRoot))
+                continue;
+
+            var current = fileInfo.Directory;
+            while (current is not null &&
+                   fullPath.StartsWith(fullRoot + Path.DirectorySeparatorChar,
+                       StringComparison.OrdinalIgnoreCase))
+            {
+                if ((current.Attributes & FileAttributes.ReparsePoint) != 0)
+                    return false;
+                if (string.Equals(current.FullName.TrimEnd(Path.DirectorySeparatorChar),
+                    fullRoot, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                current = current.Parent;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsDescendant(string path, string root) =>
+        path.StartsWith(root + Path.DirectorySeparatorChar,
+            StringComparison.OrdinalIgnoreCase);
 }
