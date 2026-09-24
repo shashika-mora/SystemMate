@@ -31,6 +31,7 @@ public sealed class CleanupSession
     public int FilesDeleted { get; set; }
     public int FilesSkipped { get; set; }
     public int FilesErrored { get; set; }
+    public bool ShowFileDetails { get; set; } = true;
     public List<OperationRecord> Records { get; set; } = new();
 
     public string TotalSizeDisplay => TotalBytesFreed switch
