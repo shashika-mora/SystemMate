@@ -81,25 +81,59 @@ A record is written to the database **before** each file is removed. If the app 
 ## Build & Run
 
 ```powershell
-# Prerequisites (.NET 8 SDK)
+# Prerequisites
+# - Windows 10 version 1809 or later
+# - .NET 8 SDK
+# - Visual Studio 2022 with the Windows App SDK / WinUI workload for the desktop app
 winget install Microsoft.DotNet.SDK.8
 
 # Clone
 git clone https://github.com/shashika-mora/SystemMate.git
 cd SystemMate
 
-# Run tests
-dotnet test tests/SystemMate.Tests/
+# Restore dependencies
+dotnet restore tests/SystemMate.Tests/SystemMate.Tests.csproj
+dotnet restore src/SystemMate/SystemMate.csproj
 
-# Build
+# Test the headless business logic
+dotnet test tests/SystemMate.Tests/SystemMate.Tests.csproj -c Release
+
+# Build the application
 dotnet build src/SystemMate/SystemMate.csproj -c Release
 
-# Run
+# Run from the .NET project
 dotnet run --project src/SystemMate/SystemMate.csproj
 ```
 
-> **MSIX packaging** requires Visual Studio 2022 with the *Windows App SDK / WinUI* workload.  
-> Open `SystemMate.sln` → right-click `SystemMate.Packaging` → Publish → Create App Packages.
+The CI workflow runs tests first, then builds and publishes the x64 application. For a CI-equivalent local publish, use:
+
+```powershell
+dotnet publish src/SystemMate/SystemMate.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o artifacts/publish
+```
+
+MSIX packaging requires Visual Studio 2022 with the Windows App SDK / WinUI workload. Open `SystemMate.sln` and use the packaging project’s Publish action to create an app package.
+
+## Development workflow
+
+1. Read the relevant code and documentation before making a change. Keep application behavior and platform assumptions explicit.
+2. Create a focused branch from `main`, make small commits, and keep unrelated cleanup out of the change.
+3. Restore, test, and build the smallest affected project locally. Run the full test project when service or model behavior changes.
+4. Review the diff for accidental generated files, local paths, credentials, and changes outside the requested scope.
+5. Open a pull request with a concise summary, validation commands and results, user-visible impact, and any known limitations.
+
+The `.workspace` directory contains collaboration instructions and reusable templates. Working notes and generated logs should remain untracked.
+
+## Safety boundaries
+
+SystemMate is a cleanup utility. Scanning must remain read-only, and deletion must occur only after an explicit user approval. Do not add silent cleanup, hidden network activity, privilege escalation, credential collection, or destructive operations without a clear preview and confirmation. Preserve the pre-operation history record and error logging behavior when changing cleanup code.
+
+When developing or testing cleanup features, use temporary test data and isolated paths. Do not point experiments at personal directories, system folders, or production databases. Treat paths, registry locations, process operations, and native API calls as security-sensitive and document any required permissions.
+
+## Contributing
+
+Use branch names such as `feature/short-description`, `fix/short-description`, or `docs/short-description`. Keep commits focused and use imperative subjects. Pull requests should explain the problem, approach, validation, and any packaging or Windows-version considerations. Include screenshots only when a visual change cannot be explained clearly in text.
+
+Reviewers should check correctness, user confirmation and safety boundaries, test coverage, nullable/type warnings, and whether the change works on supported Windows versions. Do not commit build outputs, local databases, credentials, certificates, or machine-specific settings.
 
 ## Architecture
 
