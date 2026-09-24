@@ -174,12 +174,25 @@ public class HistoryService : IDisposable
     {
         var sessions = await GetSessionsAsync(int.MaxValue);
         var sb = new System.Text.StringBuilder();
-        sb.AppendLine("SessionId,Timestamp,Category,FilePath,SizeBytes,Status,Error");
+        sb.AppendLine(string.Join(",", new[]
+        {
+            "SessionId", "Timestamp", "Category", "FilePath", "SizeBytes", "Status", "Error"
+        }.Select(EscapeCsv)));
         foreach (var session in sessions)
             foreach (var r in session.Records)
-                sb.AppendLine($"\"{r.SessionId}\",\"{r.Timestamp:O}\",\"{r.Category}\"," +
-                              $"\"{r.FilePath}\",{r.SizeBytes},\"{r.Status}\"," +
-                              $"\"{r.ErrorMessage?.Replace("\"", "\"\"")}\"");
+                sb.AppendLine(string.Join(",", new[]
+                {
+                    r.SessionId,
+                    r.Timestamp.ToString("O"),
+                    r.Category,
+                    r.FilePath,
+                    r.SizeBytes.ToString(),
+                    r.Status.ToString(),
+                    r.ErrorMessage ?? string.Empty
+                }.Select(EscapeCsv)));
         await File.WriteAllTextAsync(filePath, sb.ToString());
     }
+
+    private static string EscapeCsv(string value)
+        => $"\"{value.Replace("\"", "\"\"")}\"";
 }
