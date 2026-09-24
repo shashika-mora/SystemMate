@@ -9,16 +9,21 @@ namespace SystemMate.ViewModels;
 public sealed partial class HistoryViewModel : ObservableObject
 {
     private readonly HistoryService _history;
+    private readonly SettingsService _settings;
 
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private string _statusMessage = string.Empty;
     [ObservableProperty] private bool _isEmpty = true;
+    [ObservableProperty] private bool _showFileDetails;
 
     public ObservableCollection<CleanupSession> Sessions { get; } = new();
+    public Func<Task<bool>>? ConfirmClearAsync { get; set; }
 
-    public HistoryViewModel(HistoryService history)
+    public HistoryViewModel(HistoryService history, SettingsService settings)
     {
         _history = history;
+        _settings = settings;
+        _showFileDetails = settings.GetShowFileDetails();
     }
 
     [RelayCommand]
@@ -70,9 +75,21 @@ public sealed partial class HistoryViewModel : ObservableObject
     [RelayCommand]
     private async Task ClearHistoryAsync()
     {
-        await _history.ClearHistoryAsync();
-        Sessions.Clear();
-        IsEmpty = true;
-        StatusMessage = "History cleared.";
+        if (_settings.GetConfirmBeforeDelete() &&
+            ConfirmClearAsync is not null &&
+            !await ConfirmClearAsync())
+            return;
+
+        try
+        {
+            await _history.ClearHistoryAsync();
+            Sessions.Clear();
+            IsEmpty = true;
+            StatusMessage = "History cleared.";
+        }
+        catch (Exception ex)
+        {
+            StatusMessage = $"Failed to clear history: {ex.Message}";
+        }
     }
 }

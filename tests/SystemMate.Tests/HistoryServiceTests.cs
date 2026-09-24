@@ -76,6 +76,26 @@ public sealed class HistoryServiceTests : IDisposable
         File.Delete(path);
     }
 
+    [Fact]
+    public async Task ExportCsvAsync_EscapesEveryField()
+    {
+        var record = MakeRecord("session,\"1\"", OperationStatus.Error, 1024);
+        record.Category = "Test, category";
+        record.FilePath = "C:\\Temp\\quoted\"file.tmp";
+        record.ErrorMessage = "failed, because \"locked\"";
+        _svc.LogOperation(record);
+        var path = Path.Combine(Path.GetTempPath(), $"sm_test_{Guid.NewGuid():N}.csv");
+
+        await _svc.ExportToCsvAsync(path);
+
+        var content = await File.ReadAllTextAsync(path);
+        Assert.Contains("\"session,\"\"1\"\"\"", content);
+        Assert.Contains("\"Test, category\"", content);
+        Assert.Contains("\"C:\\Temp\\quoted\"\"file.tmp\"", content);
+        Assert.Contains("\"failed, because \"\"locked\"\"\"", content);
+        File.Delete(path);
+    }
+
     private static OperationRecord MakeRecord(string sessionId, OperationStatus status, long size)
         => new()
         {

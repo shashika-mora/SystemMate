@@ -117,7 +117,9 @@
                                 </Grid>
 
                                 <!-- Individual file records -->
-                                <Expander Header="Show file details" HorizontalAlignment="Stretch">
+                                <Expander Header="Show file details"
+                                          HorizontalAlignment="Stretch"
+                                          Visibility="{x:Bind ViewModel.ShowFileDetails, Converter={StaticResource BoolToVisibilityConverter}}">
                                     <ItemsControl ItemsSource="{x:Bind Records}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate x:DataType="models:OperationRecord">

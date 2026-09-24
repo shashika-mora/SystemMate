@@ -14,6 +14,8 @@ public sealed partial class MainWindow : Window
         this.InitializeComponent();
         ConfigureWindow();
         SetTheme();
+        App.Settings.ThemeChanged += Settings_ThemeChanged;
+        Closed += (_, _) => App.Settings.ThemeChanged -= Settings_ThemeChanged;
         SubtitleText.Text = $"Windows {Environment.OSVersion.Version.Major}";
     }
 
@@ -33,6 +35,8 @@ public sealed partial class MainWindow : Window
             titleBar.ExtendsContentIntoTitleBar = false;
         }
     }
+
+    private void Settings_ThemeChanged(object? sender, EventArgs e) => SetTheme();
 
     private void SetTheme()
     {
