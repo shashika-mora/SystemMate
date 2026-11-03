@@ -78,6 +78,8 @@ A record is written to the database **before** each file is removed. If the app 
 | v0.4 | Network Tools · Windows Repair (SFC, DISM, DNS) |
 | v0.5 | Advanced Diagnostics & Rule Engine (offline, deterministic) |
 
+Additional design ideas retained from the Tweak-LK prototype, including reversible registry changes, reviewed automation, service management, and recovery checkpoints, are documented in [Tweak-LK retirement and retained design ideas](docs/history/tweak-lk-retirement.md). These are future candidates, not implemented features.
+
 ## Build & Run
 
 ```powershell
