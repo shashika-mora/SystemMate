@@ -64,7 +64,7 @@ A record is written to the database **before** each file is removed. If the app 
 | UI Framework | WinUI 3 / Windows App SDK 1.6 |
 | MVVM | CommunityToolkit.Mvvm 8 (source generators) |
 | Database | SQLite via Microsoft.Data.Sqlite |
-| Installer | MSIX |
+| Deployment | Unpackaged x64 folder with .NET and Windows App SDK runtimes |
 | CI | GitHub Actions |
 | Tests | xUnit |
 
@@ -72,7 +72,7 @@ A record is written to the database **before** each file is removed. If the app 
 
 | Version | Feature |
 |---|---|
-| **v0.1** ✅ | Dashboard · Cleaner · History · Settings · MSIX · CI |
+| **v0.1** ✅ | Dashboard · Cleaner · History · Settings · Unpackaged publish · CI |
 | v0.2 | Startup Manager (registry + startup folder + scheduled tasks) |
 | v0.3 | Storage Analyzer (large files · duplicates · directory tree) |
 | v0.4 | Network Tools · Windows Repair (SFC, DISM, DNS) |
@@ -84,7 +84,8 @@ A record is written to the database **before** each file is removed. If the app 
 # Prerequisites
 # - Windows 10 version 1809 or later
 # - .NET 8 SDK
-# - Visual Studio 2022 with the Windows App SDK / WinUI workload for the desktop app
+# - Visual Studio 2022 with WinUI application development and a Windows SDK
+# Run the app build commands in Developer PowerShell for VS 2022 (MSBuild on PATH).
 winget install Microsoft.DotNet.SDK.8
 
 # Clone
@@ -93,25 +94,27 @@ cd SystemMate
 
 # Restore dependencies
 dotnet restore tests/SystemMate.Tests/SystemMate.Tests.csproj
-dotnet restore src/SystemMate/SystemMate.csproj
 
 # Test the headless business logic
 dotnet test tests/SystemMate.Tests/SystemMate.Tests.csproj -c Release
 
-# Build the application
-dotnet build src/SystemMate/SystemMate.csproj -c Release
+# Restore and build the application, including both runtimes
+msbuild src/SystemMate/SystemMate.csproj /restore /t:Build /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 /p:SelfContained=true /p:WindowsAppSDKSelfContained=true
 
-# Run from the .NET project
-dotnet run --project src/SystemMate/SystemMate.csproj
+# Launch the built application
+& .\src\SystemMate\bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\SystemMate.exe
 ```
 
-The CI workflow runs tests first, then builds and publishes the x64 application. For a CI-equivalent local publish, use:
+The CI workflow runs headless tests first, then uses Visual Studio 2022 MSBuild on `windows-2025` to build and publish the unpackaged x64 application. Windows App SDK and Windows SDK build tools are restored from the project's NuGet references; no `dotnet workload install` step is required. For a CI-equivalent local publish in Developer PowerShell, use:
 
 ```powershell
-dotnet publish src/SystemMate/SystemMate.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o artifacts/publish
+msbuild src/SystemMate/SystemMate.csproj /restore /t:Publish /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 /p:SelfContained=true /p:WindowsAppSDKSelfContained=true /p:PublishDir="$PWD/artifacts/publish/"
+& .\artifacts\publish\SystemMate.exe
 ```
 
-MSIX packaging requires Visual Studio 2022 with the Windows App SDK / WinUI workload. Open `SystemMate.sln` and use the packaging project’s Publish action to create an app package.
+`SelfContained=true` bundles .NET, and `WindowsAppSDKSelfContained=true` bundles the native Windows App SDK runtime. Distribute the entire publish folder, including its DLLs and resource files. The project uses `WindowsPackageType=None`; this repository does not contain an MSIX packaging project or produce an MSIX installer.
+
+For local troubleshooting, use the explicit `x64` platform and `win-x64` runtime above. A .NET SDK alone does not include Visual Studio's WinUI tooling. If an older framework-dependent build fails before showing a window, check Windows Event Viewer under **Windows Logs > Application** for `SystemMate.exe`; use the self-contained publish to include both runtimes before investigating application-level XAML errors.
 
 ## Development workflow
 
@@ -164,14 +167,13 @@ Reviewers should check correctness, user confirmation and safety boundaries, tes
 ```
 SystemMate/
 ├── src/
-│   ├── SystemMate/               # WinUI 3 application
+│   └── SystemMate/               # WinUI 3 application
 │   │   ├── Controls/             # Reusable XAML controls
 │   │   ├── Models/               # Data contracts
 │   │   ├── Services/             # Windows API wrappers
 │   │   ├── Styles/               # Colors, typography, cards
 │   │   ├── ViewModels/           # MVVM ViewModels
 │   │   └── Views/                # XAML pages
-│   └── SystemMate.Packaging/     # MSIX packaging project
 ├── tests/
 │   └── SystemMate.Tests/         # xUnit unit tests
 ├── scripts/

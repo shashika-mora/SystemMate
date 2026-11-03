@@ -32,7 +32,11 @@
 
             <NavigationView.MenuItems>
                 <NavigationViewItem Tag="dashboard" Icon="Home" Content="Dashboard" />
-                <NavigationViewItem Tag="cleaner" Icon="Broom" Content="Cleaner" />
+                <NavigationViewItem Tag="cleaner" Content="Cleaner">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xEA99;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
                 <NavigationViewItem Tag="history" Icon="List" Content="History" />
             </NavigationView.MenuItems>
 

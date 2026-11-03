@@ -8,7 +8,6 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
-  SOLUTION: 'SystemMate.sln'
 
 jobs:
   # ── Unit Tests (headless, no WinUI) ──────────────────────────────────
@@ -36,7 +35,7 @@ jobs:
   # ── Build WinUI App ───────────────────────────────────────────────────
   build:
     name: Build WinUI App
-    runs-on: windows-latest
+    runs-on: windows-2025
     needs: test
     steps:
       - name: Checkout
@@ -49,30 +48,48 @@ jobs:
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
+        with:
+          vs-version: '[17.0,18.0)'
+          msbuild-architecture: x64
 
-      - name: Restore solution
-        run: dotnet restore src/SystemMate/SystemMate.csproj
-
+      # Windows App SDK and SDK build tools are NuGet dependencies, not dotnet workloads.
+      # Use Visual Studio MSBuild for the WinUI XAML compiler/tooling.
       - name: Build (Release, x64)
         run: >
-          dotnet build src/SystemMate/SystemMate.csproj
-          -c Release
-          -p:Platform=x64
-          -p:RuntimeIdentifier=win-x64
-          --no-restore
+          msbuild src/SystemMate/SystemMate.csproj
+          /restore
+          /t:Build
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:SelfContained=true
+          /p:WindowsAppSDKSelfContained=true
 
       - name: Publish self-contained
         run: >
-          dotnet publish src/SystemMate/SystemMate.csproj
-          -c Release
-          -p:Platform=x64
-          -r win-x64
-          --self-contained true
-          -o artifacts/publish
+          msbuild src/SystemMate/SystemMate.csproj
+          /t:Publish
+          /p:Configuration=Release
+          /p:Platform=x64
+          /p:RuntimeIdentifier=win-x64
+          /p:SelfContained=true
+          /p:WindowsAppSDKSelfContained=true
+          /p:PublishDir="${{ github.workspace }}/artifacts/publish/"
+
+      - name: Verify published runtime dependencies
+        shell: pwsh
+        run: |
+          $requiredFiles = 'SystemMate.exe', 'Microsoft.WinUI.dll', 'WinRT.Runtime.dll', 'Microsoft.UI.Xaml.dll', 'coreclr.dll', 'resources.pri'
+          foreach ($file in $requiredFiles) {
+            if (-not (Test-Path -LiteralPath "artifacts/publish/$file" -PathType Leaf)) {
+              throw "Missing published runtime dependency: $file"
+            }
+          }
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: SystemMate-x64-Release
           path: artifacts/publish/
+          if-no-files-found: error
           retention-days: 14
