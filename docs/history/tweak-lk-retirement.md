@@ -6,13 +6,13 @@ SystemMate is the active application. The nested `Tweak-LK` folder was reviewed 
 
 The local project contained a WinUI 3 / .NET 8 starter application with an empty main window, Mica backdrop, template images, manifests, and architecture-specific publish profiles. It did not contain implemented registry tweaks, cleanup services, script execution, or service management. Its `Home` directory was empty.
 
-The repository tracked four metadata files; the application source was untracked, and its two planning documents were ignored. Local `main` was at `e944ff1`, one commit ahead of the last recorded `origin/main`. That commit changed `.gitignore`, despite its project-initialization subject. Neither commit subjects nor the recorded remote branch proved that the application files were backed up remotely.
+At initial review, the repository tracked four metadata files; the application source was untracked, and its two planning documents were ignored. Local `main` was at `e944ff1`, one commit ahead of the last recorded `origin/main`. That commit changed `.gitignore`, despite its project-initialization subject. A subsequent local commit, `9900057`, added the application files; a fresh backup includes that commit. Neither commit subjects nor the recorded remote branch prove that files were backed up remotely.
 
-All 107 local files, including ignored/untracked content and the complete `.git` directory, were preserved in an archive outside the SystemMate working directory. The backup manifest records each relative path, byte length, and SHA-256 hash. Every archived file was read back and checked against that manifest.
+The initial 107-file snapshot and the subsequent 132-file snapshot, including ignored content and the complete `.git` directory, were preserved in archives outside the SystemMate working directory. The latest archive is `Tweak-LK-20261103T165138Z.zip`. Each backup manifest records relative paths, byte lengths, and SHA-256 hashes. Every archived file was read back and checked against its manifest.
 
-A reversible move could not be completed because Windows denied directory access. Files moved during the partial attempt were restored, and all 107 original files were rechecked against the manifest. The original folder remains intact and ignored by SystemMate; removal needs to be completed through an account with the necessary Windows access. No permission changes were made.
+A reversible move could not be completed because Windows denied directory access. Files moved during the partial attempt were restored and verified. The later direct deletion request was also blocked by the execution environment despite explicit user authorization. The original folder remains intact and ignored by SystemMate; removal needs to be completed outside that restriction. No permission changes were made.
 
-The configured GitHub repository, `shashika-mora/Tweak-LK`, returned 404 through the connected GitHub API and could not be fetched through Git at review time. Its remote contents and archive status could not be verified. This does not establish whether it was deleted, renamed, or inaccessible.
+The user confirmed that they deleted the GitHub repository, `shashika-mora/Tweak-LK`. This explains its 404 response at review time. No remote archive is needed; the verified local snapshots preserve the reviewed contents for later reference.
 
 ## Design ideas retained in SystemMate
 
