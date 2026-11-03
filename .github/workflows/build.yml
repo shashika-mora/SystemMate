@@ -49,7 +49,6 @@ jobs:
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
         with:
-          vs-version: '[17.0,18.0)'
           msbuild-architecture: x64
 
       # Windows App SDK and SDK build tools are NuGet dependencies, not dotnet workloads.

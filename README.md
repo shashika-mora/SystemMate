@@ -84,8 +84,8 @@ A record is written to the database **before** each file is removed. If the app 
 # Prerequisites
 # - Windows 10 version 1809 or later
 # - .NET 8 SDK
-# - Visual Studio 2022 with WinUI application development and a Windows SDK
-# Run the app build commands in Developer PowerShell for VS 2022 (MSBuild on PATH).
+# - Visual Studio 2022 or later with WinUI application development and a Windows SDK
+# Run the app build commands in Developer PowerShell for Visual Studio (MSBuild on PATH).
 winget install Microsoft.DotNet.SDK.8
 
 # Clone
@@ -105,7 +105,7 @@ msbuild src/SystemMate/SystemMate.csproj /restore /t:Build /p:Configuration=Rele
 & .\src\SystemMate\bin\x64\Release\net8.0-windows10.0.19041.0\win-x64\SystemMate.exe
 ```
 
-The CI workflow runs headless tests first, then uses Visual Studio 2022 MSBuild on `windows-2025` to build and publish the unpackaged x64 application. Windows App SDK and Windows SDK build tools are restored from the project's NuGet references; no `dotnet workload install` step is required. For a CI-equivalent local publish in Developer PowerShell, use:
+The CI workflow runs headless tests first, then uses the installed Visual Studio MSBuild on `windows-2025` to build and publish the unpackaged x64 application. Windows App SDK and Windows SDK build tools are restored from the project's NuGet references; no `dotnet workload install` step is required. For a CI-equivalent local publish in Developer PowerShell, use:
 
 ```powershell
 msbuild src/SystemMate/SystemMate.csproj /restore /t:Publish /p:Configuration=Release /p:Platform=x64 /p:RuntimeIdentifier=win-x64 /p:SelfContained=true /p:WindowsAppSDKSelfContained=true /p:PublishDir="$PWD/artifacts/publish/"
