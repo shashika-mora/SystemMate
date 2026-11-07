@@ -27,12 +27,17 @@
 ```
 SystemMate
 ├── Dashboard          Live CPU · RAM · Disk · boot time · system info
-├── Cleaner            Scan → preview → approve → clean
+├── Cleaner            Scan → preview → approve → clean · cancellable
 │   ├── Windows temp files
 │   ├── Browser caches (Chrome, Edge, Firefox)
 │   ├── App caches (VS Code, npm, pip)
-│   ├── Recycle Bin
 │   └── Thumbnail cache
+├── Storage explorer   Selected-folder sizes · largest files · SHA-256 duplicates
+├── Apps               Desktop application inventory · search · CSV export
+├── Startup            Sign-in entries · backed-up current-user Run disable/restore
+├── Browser extensions Local metadata · profiles · permissions · browser management links
+├── Performance        CPU graph · process usage · power-plan selection and restore
+├── Windows tools      SFC/DISM · network diagnostics · update checks · driver/service inventories
 ├── History            Every operation logged — timestamp · path · size · status
 └── Settings           Theme · behavior prefs · data folder
 ```
@@ -48,12 +53,12 @@ Cleaner.ScanAsync()          ← read-only, nothing touched
             │
     Cleaner.CleanAsync()
     │
-    ├── HistoryService.Log() ← written to SQLite BEFORE any deletion
+    ├── HistoryService.BeginOperation() ← durable Pending record BEFORE deletion
     ├── File.Delete()
-    └── catch → log error, continue
+    └── HistoryService.CompleteOperation() ← update that record with the outcome
 ```
 
-A record is written to the database **before** each file is removed. If the app crashes mid-clean, the history still reflects what was attempted.
+A record is written to the database **before** each file is removed. If an operation cannot be confirmed, its Pending record remains visible as unconfirmed. Cleanup stops if the final history update fails. Cache targets are allowlisted and checked again before deletion; browser profiles, cookies, passwords, and browsing history are excluded. Running browsers and VS Code cause their corresponding caches to be skipped. Recycle Bin management opens in Windows rather than deleting its internal files directly.
 
 ## Stack
 
@@ -68,17 +73,18 @@ A record is written to the database **before** each file is removed. If the app 
 | CI | GitHub Actions |
 | Tests | xUnit |
 
-## Roadmap
+## Current tools and next steps
 
-| Version | Feature |
+| Status | Feature |
 |---|---|
-| **v0.1** ✅ | Dashboard · Cleaner · History · Settings · Unpackaged publish · CI |
-| v0.2 | Startup Manager (registry + startup folder + scheduled tasks) |
-| v0.3 | Storage Analyzer (large files · duplicates · directory tree) |
-| v0.4 | Network Tools · Windows Repair (SFC, DISM, DNS) |
-| v0.5 | Advanced Diagnostics & Rule Engine (offline, deterministic) |
+| Available | Dashboard, Light/Dark/System themes, confirmed cache cleanup, operation history |
+| Available | Desktop apps, Run/RunOnce/startup-folder inventory, backed-up current-user Run changes |
+| Available | Folder analysis, largest files, file-type/folder totals, SHA-256 duplicate groups, CSV reports |
+| Available | Browser-extension metadata, CPU/process monitoring, native power plans and restoration |
+| Available | Reviewed Windows maintenance commands, update checks, driver/service/restore-point inventories |
+| Future candidates | Scheduled-task startup management, packaged-app inventory, vetted registry tweaks, device-specific CPU sensors |
 
-Additional design ideas retained from the Tweak-LK prototype, including reversible registry changes, reviewed automation, service management, and recovery checkpoints, are documented in [Tweak-LK retirement and retained design ideas](docs/history/tweak-lk-retirement.md). These are future candidates, not implemented features.
+See the [utility guide and command references](docs/utility-guide.md) for capabilities, scope, and the official sources behind the tools. Additional design ideas from the Tweak-LK prototype remain in [the retirement review](docs/history/tweak-lk-retirement.md).
 
 ## Build & Run
 

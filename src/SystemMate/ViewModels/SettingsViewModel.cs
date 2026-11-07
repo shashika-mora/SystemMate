@@ -36,5 +36,4 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     public string AppVersion => "0.1.0";
-    public string DotNetVersion => System.Runtime.InteropServices.RuntimeInformation.FrameworkDescription;
 }

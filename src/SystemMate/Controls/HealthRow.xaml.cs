@@ -1,7 +1,5 @@
-using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 
 namespace SystemMate.Controls;
 
@@ -41,6 +39,7 @@ public sealed partial class HealthRow : UserControl
     public HealthRow()
     {
         this.InitializeComponent();
+        UpdateStatus();
     }
 
     private static void OnLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -50,21 +49,17 @@ public sealed partial class HealthRow : UserControl
         => ((HealthRow)d).DetailText.Text = e.NewValue?.ToString() ?? string.Empty;
 
     private static void OnStatusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        => ((HealthRow)d).UpdateStatus();
+
+    private void UpdateStatus()
     {
-        var row = (HealthRow)d;
-        var status = e.NewValue?.ToString() ?? "neutral";
-
-        var (color, symbol) = status switch
+        var state = Status switch
         {
-            "good"    => (Colors.LimeGreen, Symbol.Accept),
-            "warn"    => (Colors.Orange,    Symbol.Important),
-            "error"   => (Colors.OrangeRed, Symbol.Cancel),
-            _         => (Colors.Gray,      Symbol.Help),
+            "good" => "Good",
+            "warn" => "Warning",
+            "error" => "Error",
+            _ => "Neutral"
         };
-
-        var brush = new SolidColorBrush(color);
-        row.StatusDot.Fill     = brush;
-        row.StatusIcon.Foreground = brush;
-        row.StatusIcon.Symbol  = symbol;
+        VisualStateManager.GoToState(this, state, false);
     }
 }

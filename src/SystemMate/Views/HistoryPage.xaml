@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:SystemMate.Models"
     mc:Ignorable="d"
-    Background="{StaticResource AppBackgroundBrush}">
+    Background="{ThemeResource AppBackgroundBrush}">
 
     <ScrollViewer Padding="32,28,32,32">
         <StackPanel Spacing="24">
@@ -50,7 +50,7 @@
             <ProgressRing IsActive="{x:Bind ViewModel.IsLoading, Mode=OneWay}"
                           Width="32" Height="32"
                           HorizontalAlignment="Center"
-                          Foreground="{StaticResource AccentBlueBrush}"
+                          Foreground="{ThemeResource AccentBlueBrush}"
                           Visibility="{x:Bind ViewModel.IsLoading, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}" />
 
             <!-- ── Empty state ────────────────────────────────────── -->
@@ -58,11 +58,11 @@
                     Visibility="{x:Bind ViewModel.IsEmpty, Mode=OneWay, Converter={StaticResource BoolToVisibilityConverter}}">
                 <StackPanel HorizontalAlignment="Center" Padding="40" Spacing="12">
                     <FontIcon Glyph="&#xE81C;" FontSize="48"
-                              Foreground="{StaticResource TextMutedBrush}" />
+                              Foreground="{ThemeResource TextMutedBrush}" />
                     <TextBlock Text="No cleanup history yet"
                                FontSize="16" FontWeight="SemiBold"
                                HorizontalAlignment="Center"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{ThemeResource TextPrimaryBrush}" />
                     <TextBlock Text="Run a scan from the Cleaner to get started."
                                Style="{StaticResource BodyStyle}"
                                HorizontalAlignment="Center" />
@@ -86,7 +86,7 @@
                                     <StackPanel>
                                         <TextBlock Text="{x:Bind StartedAt}"
                                                    FontWeight="SemiBold"
-                                                   Foreground="{StaticResource TextPrimaryBrush}" />
+                                                   Foreground="{ThemeResource TextPrimaryBrush}" />
                                         <TextBlock Text="{x:Bind SessionId}"
                                                    Style="{StaticResource CaptionStyle}" />
                                     </StackPanel>
@@ -95,23 +95,28 @@
                                         <StackPanel>
                                             <TextBlock Text="{x:Bind TotalSizeDisplay}"
                                                        FontWeight="Bold" FontSize="16"
-                                                       Foreground="{StaticResource AccentBlueBrush}"
+                                                       Foreground="{ThemeResource AccentBlueBrush}"
                                                        HorizontalAlignment="Right" />
                                             <TextBlock Text="freed" Style="{StaticResource CaptionStyle}" HorizontalAlignment="Right" />
                                         </StackPanel>
                                         <StackPanel>
                                             <TextBlock Text="{x:Bind FilesDeleted}"
                                                        FontWeight="Bold" FontSize="16"
-                                                       Foreground="{StaticResource AccentGreenBrush}"
+                                                       Foreground="{ThemeResource AccentGreenBrush}"
                                                        HorizontalAlignment="Right" />
                                             <TextBlock Text="deleted" Style="{StaticResource CaptionStyle}" HorizontalAlignment="Right" />
                                         </StackPanel>
                                         <StackPanel>
                                             <TextBlock Text="{x:Bind FilesErrored}"
                                                        FontWeight="Bold" FontSize="16"
-                                                       Foreground="{StaticResource AccentRedBrush}"
+                                                       Foreground="{ThemeResource AccentRedBrush}"
                                                        HorizontalAlignment="Right" />
                                             <TextBlock Text="errors" Style="{StaticResource CaptionStyle}" HorizontalAlignment="Right" />
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="{x:Bind FilesPending}" FontWeight="Bold" FontSize="16"
+                                                       Foreground="{ThemeResource AccentAmberBrush}" HorizontalAlignment="Right" />
+                                            <TextBlock Text="unconfirmed" Style="{StaticResource CaptionStyle}" HorizontalAlignment="Right" />
                                         </StackPanel>
                                     </StackPanel>
                                 </Grid>
@@ -128,6 +133,7 @@
                                                         <ColumnDefinition Width="70" />
                                                         <ColumnDefinition Width="*" />
                                                         <ColumnDefinition Width="60" />
+                                                        <ColumnDefinition Width="95" />
                                                     </Grid.ColumnDefinitions>
                                                     <TextBlock Grid.Column="0"
                                                                Text="{x:Bind Category}"
@@ -140,6 +146,8 @@
                                                                Text="{x:Bind SizeDisplay}"
                                                                Style="{StaticResource CaptionStyle}"
                                                                HorizontalAlignment="Right" />
+                                                    <TextBlock Grid.Column="3" Text="{x:Bind Status}"
+                                                               Style="{StaticResource CaptionStyle}" />
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>

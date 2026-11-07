@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="using:SystemMate.Models"
     mc:Ignorable="d"
-    Background="{StaticResource AppBackgroundBrush}">
+    Background="{ThemeResource AppBackgroundBrush}">
 
     <ScrollViewer Padding="32,28,32,32">
         <StackPanel Spacing="24">
@@ -26,8 +26,10 @@
                                Margin="0,4,0,0" />
                 </StackPanel>
 
-                <!-- Scan button -->
-                <Button Grid.Column="1"
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Button Content="Stop" Command="{x:Bind ViewModel.CancelOperationCommand}"
+                            Style="{StaticResource QuickActionButtonStyle}" />
+                <Button
                         Style="{StaticResource PrimaryButtonStyle}"
                         Command="{x:Bind ViewModel.ScanCommand}"
                         VerticalAlignment="Center">
@@ -36,6 +38,7 @@
                         <TextBlock Text="Scan" />
                     </StackPanel>
                 </Button>
+                </StackPanel>
             </Grid>
 
             <!-- ── Status bar ─────────────────────────────────────── -->
@@ -49,13 +52,13 @@
                     <StackPanel Orientation="Horizontal" Spacing="12">
                         <ProgressRing IsActive="{x:Bind ViewModel.IsScanning, Mode=OneWay}"
                                       Width="20" Height="20"
-                                      Foreground="{StaticResource AccentBlueBrush}" />
+                                      Foreground="{ThemeResource AccentBlueBrush}" />
                         <ProgressRing IsActive="{x:Bind ViewModel.IsCleaning, Mode=OneWay}"
                                       Width="20" Height="20"
-                                      Foreground="{StaticResource AccentAmberBrush}" />
+                                      Foreground="{ThemeResource AccentAmberBrush}" />
                         <TextBlock Text="{x:Bind ViewModel.StatusMessage, Mode=OneWay}"
                                    VerticalAlignment="Center"
-                                   Foreground="{StaticResource TextSecondaryBrush}" />
+                                   Foreground="{ThemeResource TextSecondaryBrush}" />
                     </StackPanel>
 
                     <!-- Size summary (shown after scan) -->
@@ -64,14 +67,14 @@
                         <StackPanel>
                             <TextBlock Text="{x:Bind ViewModel.TotalSizeDisplay, Mode=OneWay}"
                                        FontSize="22" FontWeight="Bold"
-                                       Foreground="{StaticResource AccentBlueBrush}" />
+                                       Foreground="{ThemeResource AccentBlueBrush}" />
                             <TextBlock Text="found"
                                        Style="{StaticResource CaptionStyle}" />
                         </StackPanel>
                         <StackPanel>
                             <TextBlock Text="{x:Bind ViewModel.TotalFileCount, Mode=OneWay}"
                                        FontSize="22" FontWeight="Bold"
-                                       Foreground="{StaticResource TextPrimaryBrush}" />
+                                       Foreground="{ThemeResource TextPrimaryBrush}" />
                             <TextBlock Text="files"
                                        Style="{StaticResource CaptionStyle}" />
                         </StackPanel>
@@ -102,7 +105,7 @@
                                    HorizontalAlignment="Right" />
                     </Grid>
 
-                    <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" Margin="0,0,0,8" />
+                    <Rectangle Height="1" Fill="{ThemeResource CardBorderBrush}" Margin="0,0,0,8" />
 
                     <!-- Category rows -->
                     <ItemsControl ItemsSource="{x:Bind ViewModel.Categories, Mode=OneWay}">
@@ -122,21 +125,24 @@
 
                                     <StackPanel Grid.Column="1" Spacing="2">
                                         <TextBlock Text="{x:Bind DisplayName}"
-                                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                                   Foreground="{ThemeResource TextPrimaryBrush}"
                                                    FontWeight="Medium" />
                                         <TextBlock Text="{x:Bind Description}"
-                                                   Style="{StaticResource CaptionStyle}" />
+                                                   Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                                        <TextBlock Text="{x:Bind ScanNote}"
+                                                   Foreground="{ThemeResource AccentAmberBrush}"
+                                                   TextWrapping="Wrap" FontSize="12" />
                                     </StackPanel>
 
                                     <TextBlock Grid.Column="2"
                                                Text="{x:Bind FileCount}"
-                                               Foreground="{StaticResource TextSecondaryBrush}"
+                                               Foreground="{ThemeResource TextSecondaryBrush}"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center" />
 
                                     <TextBlock Grid.Column="3"
                                                Text="{x:Bind SizeDisplay}"
-                                               Foreground="{StaticResource AccentBlueBrush}"
+                                               Foreground="{ThemeResource AccentBlueBrush}"
                                                FontWeight="SemiBold"
                                                HorizontalAlignment="Right"
                                                VerticalAlignment="Center" />
@@ -145,7 +151,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
 
-                    <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" Margin="0,8,0,16" />
+                    <Rectangle Height="1" Fill="{ThemeResource CardBorderBrush}" Margin="0,8,0,16" />
 
                     <!-- Clean button row -->
                     <Grid>
@@ -156,7 +162,7 @@
 
                         <StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
                             <SymbolIcon Symbol="Accept"
-                                        Foreground="{StaticResource AccentGreenBrush}" />
+                                        Foreground="{ThemeResource AccentGreenBrush}" />
                             <TextBlock Text="A history record will be created before cleanup. Previous files cannot be restored automatically."
                                        Style="{StaticResource CaptionStyle}"
                                        VerticalAlignment="Center" />
@@ -182,12 +188,12 @@
                 <StackPanel Spacing="12">
                     <TextBlock Text="Cleaning in progress…"
                                FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
+                               Foreground="{ThemeResource TextPrimaryBrush}" />
                     <ProgressBar Value="{x:Bind ViewModel.ProgressDone, Mode=OneWay}"
                                  Maximum="{x:Bind ViewModel.ProgressTotal, Mode=OneWay}"
                                  Height="6"
                                  CornerRadius="3"
-                                 Foreground="{StaticResource AccentBlueBrush}" />
+                                 Foreground="{ThemeResource AccentBlueBrush}" />
                     <TextBlock Text="{x:Bind ViewModel.ProgressFile, Mode=OneWay}"
                                Style="{StaticResource CaptionStyle}"
                                TextTrimming="CharacterEllipsis" />

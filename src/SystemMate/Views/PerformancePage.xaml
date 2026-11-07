@@ -1,0 +1,62 @@
+<Page x:Class="SystemMate.Views.PerformancePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:models="using:SystemMate.Models"
+      Background="{ThemeResource AppBackgroundBrush}">
+    <ScrollViewer Padding="32,28">
+        <StackPanel Spacing="20">
+            <TextBlock Text="Performance &amp; power" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Text="See what is using resources and choose how Windows balances performance with battery life." Style="{StaticResource BodyStyle}" />
+            <InfoBar x:Name="StatusBar" IsOpen="True" IsClosable="False" Severity="Informational" Message="Collecting the first process sample…" />
+            <Border Style="{StaticResource ContentCardStyle}">
+                <StackPanel Spacing="8">
+                    <TextBlock x:Name="ProcessorText" Style="{StaticResource MetricValueStyle}" FontSize="20" TextWrapping="Wrap" />
+                    <TextBlock x:Name="ProcessorDetailText" Style="{StaticResource BodyStyle}" />
+                    <TextBlock x:Name="CpuUsageText" Text="CPU sampling…" Foreground="{ThemeResource AccentBlueBrush}" FontSize="20" FontWeight="SemiBold" />
+                    <Viewbox Height="90" Stretch="Fill" HorizontalAlignment="Stretch" AutomationProperties.Name="Recent CPU usage graph">
+                        <Canvas Width="600" Height="100" Background="{ThemeResource ControlFillBrush}">
+                            <Polyline x:Name="CpuLine" Stroke="{ThemeResource AccentBlueBrush}" StrokeThickness="2" />
+                        </Canvas>
+                    </Viewbox>
+                    <TextBlock Text="Recent whole-device CPU usage · last 60 samples" Style="{StaticResource CaptionStyle}" />
+                    <TextBlock Text="Clock speed is the Windows-reported value, not a per-core frequency trace. Temperature, voltage, and hardware overclocking are unavailable." Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Border Style="{StaticResource ContentCardStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="Power plan" FontSize="18" FontWeight="SemiBold" Foreground="{ThemeResource TextPrimaryBrush}" />
+                    <TextBlock Text="Only plans available on this PC are listed. Changing a plan can affect battery life, heat, and fan noise. You can restore the previous plan." Style="{StaticResource BodyStyle}" />
+                    <ComboBox x:Name="PlanPicker" DisplayMemberPath="DisplayName" HorizontalAlignment="Stretch" AutomationProperties.Name="Power plan" SelectionChanged="PlanSelectionChanged" />
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                        <Button x:Name="ApplyPlanButton" Content="Use selected plan" Click="ApplyPlanClick" />
+                        <Button x:Name="RestorePlanButton" Content="Restore previous plan" Click="RestorePlanClick" IsEnabled="False" />
+                        <Button Content="Windows power settings" Click="PowerSettingsClick" />
+                    </StackPanel>
+                    <TextBlock x:Name="PlanStatusText" Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+            <Grid ColumnSpacing="12">
+                <TextBlock Text="Processes" FontSize="18" FontWeight="SemiBold" Foreground="{ThemeResource TextPrimaryBrush}" />
+                <Button Content="Open Task Manager" Click="TaskManagerClick" HorizontalAlignment="Right" />
+            </Grid>
+            <TextBlock Text="Top 40 accessible processes, ordered by sampled CPU then memory. CPU is a share of the whole device; protected processes may be absent." Style="{StaticResource CaptionStyle}" TextWrapping="Wrap" />
+            <Grid Padding="12,4" ColumnSpacing="12">
+                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="75"/><ColumnDefinition Width="90"/><ColumnDefinition Width="75"/></Grid.ColumnDefinitions>
+                <TextBlock Text="Process" FontWeight="SemiBold"/><TextBlock Grid.Column="1" Text="CPU" FontWeight="SemiBold"/><TextBlock Grid.Column="2" Text="Memory" FontWeight="SemiBold"/><TextBlock Grid.Column="3" Text="PID" FontWeight="SemiBold"/>
+            </Grid>
+            <ItemsControl x:Name="ProcessList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="models:ProcessUsage">
+                        <Border BorderBrush="{ThemeResource CardBorderBrush}" BorderThickness="0,0,0,1" Padding="12,8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="75"/><ColumnDefinition Width="90"/><ColumnDefinition Width="75"/></Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" Foreground="{ThemeResource TextPrimaryBrush}" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind CpuDisplay}"/><TextBlock Grid.Column="2" Text="{x:Bind MemoryDisplay}"/><TextBlock Grid.Column="3" Text="{x:Bind Id}"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

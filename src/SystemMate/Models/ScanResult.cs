@@ -1,15 +1,29 @@
+using System.ComponentModel;
+
 namespace SystemMate.Models;
 
 /// <summary>A logical group of junk files in one cleanup category.</summary>
-public sealed class CleanupCategory
+public sealed class CleanupCategory : INotifyPropertyChanged
 {
     public required string Id { get; init; }
     public required string DisplayName { get; init; }
     public required string Description { get; init; }
     public long TotalSizeBytes { get; set; }
     public int FileCount { get; set; }
-    public bool IsSelected { get; set; } = true;
+    private bool _isSelected = true;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set
+        {
+            if (_isSelected == value) return;
+            _isSelected = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsSelected)));
+        }
+    }
+    public event PropertyChangedEventHandler? PropertyChanged;
     public bool IsSafe { get; init; } = true;
+    public string ScanNote { get; set; } = string.Empty;
 
     /// <summary>Files found in this category (populated after scan).</summary>
     public List<string> FilePaths { get; } = new();

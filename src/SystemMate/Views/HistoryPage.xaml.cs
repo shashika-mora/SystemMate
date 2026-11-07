@@ -26,7 +26,8 @@ public sealed partial class HistoryPage : Page
             PrimaryButtonText = "Clear",
             CloseButtonText = "Cancel",
             DefaultButton = ContentDialogButton.Close,
-            XamlRoot = XamlRoot
+            XamlRoot = XamlRoot,
+            RequestedTheme = ActualTheme
         };
         return await dialog.ShowAsync() == ContentDialogResult.Primary;
     }

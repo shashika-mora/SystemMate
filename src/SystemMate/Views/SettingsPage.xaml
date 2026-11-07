@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{StaticResource AppBackgroundBrush}">
+    Background="{ThemeResource AppBackgroundBrush}">
 
     <ScrollViewer Padding="32,28,32,32">
         <StackPanel Spacing="24" MaxWidth="680" HorizontalAlignment="Left">
@@ -26,7 +26,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <TextBlock Text="Theme"
-                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       Foreground="{ThemeResource TextPrimaryBrush}"
                                        FontWeight="Medium" />
                             <TextBlock Text="Choose how SystemMate looks"
                                        Style="{StaticResource CaptionStyle}" />
@@ -52,7 +52,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <TextBlock Text="Confirm before deleting"
-                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       Foreground="{ThemeResource TextPrimaryBrush}"
                                        FontWeight="Medium" />
                             <TextBlock Text="Show a dialog before any file is removed"
                                        Style="{StaticResource CaptionStyle}" />
@@ -63,7 +63,7 @@
                                       VerticalAlignment="Center" />
                     </Grid>
 
-                    <Rectangle Height="1" Fill="{StaticResource CardBorderBrush}" />
+                    <Rectangle Height="1" Fill="{ThemeResource CardBorderBrush}" />
 
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -72,7 +72,7 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <TextBlock Text="Show file details in history"
-                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       Foreground="{ThemeResource TextPrimaryBrush}"
                                        FontWeight="Medium" />
                             <TextBlock Text="Expand individual file paths per session"
                                        Style="{StaticResource CaptionStyle}" />
@@ -98,9 +98,9 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel>
                             <TextBlock Text="Open data folder"
-                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       Foreground="{ThemeResource TextPrimaryBrush}"
                                        FontWeight="Medium" />
-                            <TextBlock Text="history.db and settings.ini live here"
+                            <TextBlock Text="Find your saved settings, history, logs and startup backups"
                                        Style="{StaticResource CaptionStyle}" />
                         </StackPanel>
                         <Button Grid.Column="1"
@@ -121,15 +121,13 @@
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="SystemMate"
                                    FontSize="18" FontWeight="Bold"
-                                   Foreground="{StaticResource AccentBlueBrush}" />
+                                   Foreground="{ThemeResource AccentBlueBrush}" />
                         <TextBlock Text="{x:Bind ViewModel.AppVersion}"
                                    FontSize="18"
-                                   Foreground="{StaticResource TextMutedBrush}" />
+                                   Foreground="{ThemeResource TextMutedBrush}" />
                     </StackPanel>
-                    <TextBlock Text="A professional Windows system utility. 100% offline."
+                    <TextBlock Text="Understand your PC, recover space, and manage everyday maintenance."
                                Style="{StaticResource BodyStyle}" />
-                    <TextBlock Text="{x:Bind ViewModel.DotNetVersion}"
-                               Style="{StaticResource CaptionStyle}" />
                 </StackPanel>
             </Border>
 

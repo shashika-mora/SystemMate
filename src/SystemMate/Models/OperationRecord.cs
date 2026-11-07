@@ -1,6 +1,6 @@
 namespace SystemMate.Models;
 
-public enum OperationStatus { Deleted, Skipped, Error }
+public enum OperationStatus { Deleted, Skipped, Error, Pending }
 
 /// <summary>Single file operation record — written to SQLite before any deletion.</summary>
 public sealed class OperationRecord
@@ -31,6 +31,8 @@ public sealed class CleanupSession
     public int FilesDeleted { get; set; }
     public int FilesSkipped { get; set; }
     public int FilesErrored { get; set; }
+    public int FilesPending { get; set; }
+    public bool WasCanceled { get; set; }
     public bool ShowFileDetails { get; set; } = true;
     public List<OperationRecord> Records { get; set; } = new();
 

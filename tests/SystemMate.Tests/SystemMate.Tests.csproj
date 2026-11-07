@@ -24,6 +24,10 @@
     <Compile Include="..\..\src\SystemMate\Services\HistoryService.cs" LinkBase="Services" />
     <Compile Include="..\..\src\SystemMate\Services\CleanerService.cs" LinkBase="Services" />
     <Compile Include="..\..\src\SystemMate\Services\SettingsService.cs" LinkBase="Services" />
+    <Compile Include="..\..\src\SystemMate\Services\StorageAnalysisService.cs" LinkBase="Services" />
+    <Compile Include="..\..\src\SystemMate\Services\StartupService.cs" LinkBase="Services" />
+    <Compile Include="..\..\src\SystemMate\Services\WindowsCommandService.cs" LinkBase="Services" />
+    <Compile Include="..\..\src\SystemMate\Services\BrowserExtensionService.cs" LinkBase="Services" />
   </ItemGroup>
 
 </Project>

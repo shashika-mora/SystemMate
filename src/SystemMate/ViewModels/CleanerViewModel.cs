@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using SystemMate.Models;
 using SystemMate.Services;
 
@@ -10,17 +11,21 @@ public sealed partial class CleanerViewModel : ObservableObject
 {
     private readonly CleanerService _cleaner;
     private ScanResult? _lastScan;
+    private CancellationTokenSource? _operationCancellation;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanCleanNow))]
+    [NotifyCanExecuteChangedFor(nameof(ScanCommand), nameof(CleanCommand), nameof(CancelOperationCommand))]
     private bool _isScanning;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanCleanNow))]
+    [NotifyCanExecuteChangedFor(nameof(ScanCommand), nameof(CleanCommand), nameof(CancelOperationCommand))]
     private bool _isCleaning;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CanCleanNow))]
+    [NotifyCanExecuteChangedFor(nameof(CleanCommand))]
     private bool _hasScanResult;
 
     [ObservableProperty] private string _statusMessage = "Ready to scan. SystemMate never removes anything silently.";
@@ -44,20 +49,29 @@ public sealed partial class CleanerViewModel : ObservableObject
     {
         IsScanning = true;
         HasScanResult = false;
-        Categories.Clear();
+        ClearCategories();
+        _lastScan = null;
+        _operationCancellation = new CancellationTokenSource();
         StatusMessage = "Scanning…";
 
         try
         {
-            var progress = new Progress<string>(msg => StatusMessage = msg);
-            _lastScan = await _cleaner.ScanAsync(progress);
+            var progress = new Progress<string>(msg => { if (IsScanning) StatusMessage = msg; });
+            _lastScan = await _cleaner.ScanAsync(progress, _operationCancellation.Token);
 
             foreach (var cat in _lastScan.Categories)
+            {
+                cat.PropertyChanged += CategorySelectionChanged;
                 Categories.Add(cat);
+            }
 
             UpdateTotals();
             HasScanResult = true;
-            StatusMessage = $"Scan complete — {_lastScan.TotalSizeDisplay} found across {_lastScan.TotalFileCount:N0} files.";
+            StatusMessage = $"Scan complete — {_lastScan.TotalSizeDisplay} found across {_lastScan.TotalFileCount:N0} files. Review the categories before cleaning.";
+        }
+        catch (OperationCanceledException)
+        {
+            StatusMessage = "Scan stopped. No files were changed.";
         }
         catch (Exception ex)
         {
@@ -66,6 +80,8 @@ public sealed partial class CleanerViewModel : ObservableObject
         finally
         {
             IsScanning = false;
+            _operationCancellation?.Dispose();
+            _operationCancellation = null;
         }
     }
 
@@ -77,6 +93,7 @@ public sealed partial class CleanerViewModel : ObservableObject
         if (_lastScan is null) return;
 
         IsCleaning = true;
+        _operationCancellation = new CancellationTokenSource();
         ProgressDone = 0;
         ProgressTotal = _lastScan.TotalFileCount;
         StatusMessage = "Cleaning…";
@@ -90,23 +107,28 @@ public sealed partial class CleanerViewModel : ObservableObject
                 ProgressTotal = p.total;
             });
 
-            var session = await _cleaner.CleanAsync(_lastScan, progress);
+            var session = await _cleaner.CleanAsync(_lastScan, progress, _operationCancellation.Token);
 
-            StatusMessage = $"Done! Freed {session.TotalSizeDisplay}. " +
+            StatusMessage = $"{(session.WasCanceled ? "Cleanup stopped" : "Cleanup complete")}. Freed {session.TotalSizeDisplay}. " +
                             $"{session.FilesDeleted} deleted, " +
                             $"{session.FilesSkipped} skipped, " +
                             $"{session.FilesErrored} errors.";
             HasScanResult = false;
-            Categories.Clear();
+            ClearCategories();
             _lastScan = null;
         }
         catch (Exception ex)
         {
-            StatusMessage = $"Clean failed: {ex.Message}";
+            StatusMessage = $"Cleanup stopped: {ex.Message} Check History for recorded attempts, then scan again.";
+            HasScanResult = false;
+            ClearCategories();
+            _lastScan = null;
         }
         finally
         {
             IsCleaning = false;
+            _operationCancellation?.Dispose();
+            _operationCancellation = null;
         }
     }
 
@@ -118,5 +140,23 @@ public sealed partial class CleanerViewModel : ObservableObject
         if (_lastScan is null) return;
         TotalSizeDisplay = _lastScan.TotalSizeDisplay;
         TotalFileCount   = _lastScan.TotalFileCount;
+        OnPropertyChanged(nameof(CanCleanNow));
+        CleanCommand.NotifyCanExecuteChanged();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanCancel))]
+    private void CancelOperation() => _operationCancellation?.Cancel();
+
+    private bool CanCancel() => IsScanning || IsCleaning;
+
+    private void CategorySelectionChanged(object? sender, PropertyChangedEventArgs args)
+    {
+        if (args.PropertyName == nameof(CleanupCategory.IsSelected)) UpdateTotals();
+    }
+
+    private void ClearCategories()
+    {
+        foreach (var category in Categories) category.PropertyChanged -= CategorySelectionChanged;
+        Categories.Clear();
     }
 }

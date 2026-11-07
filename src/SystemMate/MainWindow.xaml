@@ -8,11 +8,12 @@
     mc:Ignorable="d"
     Title="SystemMate">
 
-    <Grid>
+    <Grid Background="{ThemeResource AppBackgroundBrush}">
         <NavigationView x:Name="NavView"
                         PaneDisplayMode="Left"
                         IsBackButtonVisible="Collapsed"
                         IsSettingsVisible="True"
+                        Background="{ThemeResource SidebarBackgroundBrush}"
                         OpenPaneLength="200"
                         SelectionChanged="NavView_SelectionChanged"
                         Loaded="NavView_Loaded">
@@ -22,7 +23,7 @@
                     <TextBlock Text="SystemMate"
                                FontSize="18"
                                FontWeight="SemiBold"
-                               Foreground="{ThemeResource SystemAccentColor}" />
+                               Foreground="{ThemeResource AccentBlueBrush}" />
                     <TextBlock x:Name="SubtitleText"
                                FontSize="11"
                                Opacity="0.5"
@@ -37,6 +38,12 @@
                         <FontIcon Glyph="&#xEA99;" />
                     </NavigationViewItem.Icon>
                 </NavigationViewItem>
+                <NavigationViewItem Tag="storage" Content="Storage explorer"><NavigationViewItem.Icon><FontIcon Glyph="&#xEDA2;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Tag="apps" Content="Apps"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8F1;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Tag="startup" Content="Startup"><NavigationViewItem.Icon><FontIcon Glyph="&#xE7E8;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Tag="browsers" Content="Browser extensions"><NavigationViewItem.Icon><FontIcon Glyph="&#xE774;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Tag="performance" Content="Performance"><NavigationViewItem.Icon><FontIcon Glyph="&#xE9D9;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Tag="tools" Content="Windows tools"><NavigationViewItem.Icon><FontIcon Glyph="&#xE90F;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Tag="history" Icon="List" Content="History" />
             </NavigationView.MenuItems>
 

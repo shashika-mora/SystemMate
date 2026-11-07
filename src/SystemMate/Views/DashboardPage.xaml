@@ -8,7 +8,7 @@
     xmlns:vm="using:SystemMate.ViewModels"
     xmlns:controls="using:SystemMate.Controls"
     mc:Ignorable="d"
-    Background="{StaticResource AppBackgroundBrush}">
+    Background="{ThemeResource AppBackgroundBrush}">
 
     <ScrollViewer Padding="32,28,32,32">
         <StackPanel Spacing="24">
@@ -24,22 +24,22 @@
                     <TextBlock x:Name="GreetingText"
                                FontSize="22"
                                FontWeight="SemiBold"
-                               Foreground="{StaticResource TextPrimaryBrush}" />
-                    <TextBlock Text="Live metrics are available below. Some health checks are unavailable."
+                               Foreground="{ThemeResource TextPrimaryBrush}" />
+                    <TextBlock Text="A clear view of your PC. Choose what to inspect or improve next."
                                Style="{StaticResource BodyStyle}"
                                Margin="0,4,0,0" />
                 </StackPanel>
 
                 <Border Grid.Column="1"
                         CornerRadius="20"
-                        Background="#1A22C55E"
-                        BorderBrush="{StaticResource AccentGreenBrush}"
+                        Background="{ThemeResource ControlFillBrush}"
+                        BorderBrush="{ThemeResource CardBorderBrush}"
                         BorderThickness="1"
                         Padding="12,6">
                     <StackPanel Orientation="Horizontal" Spacing="6">
-                        <Ellipse Width="8" Height="8" Fill="{StaticResource AccentGreenBrush}" VerticalAlignment="Center" />
-                        <TextBlock Text="Health checks limited"
-                                   Foreground="{StaticResource AccentGreenBrush}"
+                        <Ellipse Width="8" Height="8" Fill="{ThemeResource TextMutedBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="Live overview"
+                                   Foreground="{ThemeResource TextSecondaryBrush}"
                                    FontSize="12"
                                    FontWeight="Medium" />
                     </StackPanel>
@@ -64,8 +64,8 @@
                         <ProgressBar Value="{x:Bind ViewModel.CpuUsage, Mode=OneWay}"
                                      Maximum="100"
                                      Height="3"
-                                     Foreground="{StaticResource AccentBlueBrush}"
-                                     Background="#FF2A2A3A" />
+                                     Foreground="{ThemeResource AccentBlueBrush}"
+                                     Background="{ThemeResource CardBorderBrush}" />
                         <TextBlock Text="Processor" Style="{StaticResource CaptionStyle}" />
                     </StackPanel>
                 </Border>
@@ -80,8 +80,8 @@
                         <ProgressBar Value="{x:Bind ViewModel.RamPercent, Mode=OneWay}"
                                      Maximum="100"
                                      Height="3"
-                                     Foreground="{StaticResource AccentBlueBrush}"
-                                     Background="#FF2A2A3A" />
+                                     Foreground="{ThemeResource AccentBlueBrush}"
+                                     Background="{ThemeResource CardBorderBrush}" />
                         <TextBlock Text="RAM used" Style="{StaticResource CaptionStyle}" />
                     </StackPanel>
                 </Border>
@@ -96,8 +96,8 @@
                         <ProgressBar Value="{x:Bind ViewModel.DiskPercent, Mode=OneWay}"
                                      Maximum="100"
                                      Height="3"
-                                     Foreground="{StaticResource AccentBlueBrush}"
-                                     Background="#FF2A2A3A" />
+                                     Foreground="{ThemeResource AccentBlueBrush}"
+                                     Background="{ThemeResource CardBorderBrush}" />
                         <TextBlock Text="Drive C:" Style="{StaticResource CaptionStyle}" />
                     </StackPanel>
                 </Border>
@@ -105,11 +105,11 @@
                 <!-- Boot Time -->
                 <Border Style="{StaticResource MetricCardStyle}" Grid.Column="3">
                     <StackPanel Spacing="8">
-                        <TextBlock Text="BOOT TIME" Style="{StaticResource SectionLabelStyle}" />
+                        <TextBlock Text="UPTIME" Style="{StaticResource SectionLabelStyle}" />
                         <TextBlock Text="{x:Bind ViewModel.BootTimeDisplay, Mode=OneWay}"
                                    Style="{StaticResource MetricValueStyle}" />
                         <ProgressBar Value="0" Maximum="100" Height="3"
-                                     Background="#FF2A2A3A" />
+                                     Background="{ThemeResource CardBorderBrush}" />
                         <TextBlock Text="Since last restart" Style="{StaticResource CaptionStyle}" />
                     </StackPanel>
                 </Border>
@@ -125,29 +125,18 @@
                 <!-- System Health -->
                 <Border Style="{StaticResource ContentCardStyle}" Grid.Column="0">
                     <StackPanel Spacing="16">
-                        <TextBlock Text="System health"
+                        <TextBlock Text="Explore your PC"
                                    FontSize="15"
                                    FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
-                        <TextBlock Text="Click on any item for details — nothing happens automatically."
+                                   Foreground="{ThemeResource TextPrimaryBrush}" />
+                        <TextBlock Text="Inspect the details before deciding what to change."
                                    Style="{StaticResource CaptionStyle}" />
 
                         <StackPanel Spacing="12">
-                            <controls:HealthRow Label="Junk files"
-                                                Detail="Scan to check"
-                                                Status="neutral" />
-                            <controls:HealthRow Label="Startup apps"
-                                                Detail="Review in Startup Manager"
-                                                Status="neutral" />
-                            <controls:HealthRow Label="Windows Update"
-                                                Detail="Unavailable"
-                                                Status="neutral" />
-                            <controls:HealthRow Label="Network"
-                                                Detail="Unavailable"
-                                                Status="neutral" />
-                            <controls:HealthRow Label="Drive health"
-                                                Detail="{x:Bind ViewModel.DiskHealth, Mode=OneWay}"
-                                                Status="neutral" />
+                            <Button Content="Installed apps" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Tag="apps" Click="ExploreClick" />
+                            <Button Content="Processes &amp; power plans" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Tag="performance" Click="ExploreClick" />
+                            <Button Content="Browser extensions" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Tag="browsers" Click="ExploreClick" />
+                            <Button Content="Windows, drivers &amp; network tools" HorizontalAlignment="Stretch" HorizontalContentAlignment="Left" Tag="tools" Click="ExploreClick" />
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -158,8 +147,8 @@
                         <TextBlock Text="Quick actions"
                                    FontSize="15"
                                    FontWeight="SemiBold"
-                                   Foreground="{StaticResource TextPrimaryBrush}" />
-                        <TextBlock Text="All actions show a preview with a confirmation step."
+                                   Foreground="{ThemeResource TextPrimaryBrush}" />
+                        <TextBlock Text="Start with a scan. Changes are reviewed separately."
                                    Style="{StaticResource CaptionStyle}" />
 
                         <StackPanel Spacing="8">
@@ -167,7 +156,7 @@
                                     Click="ScanJunkClick">
                                 <StackPanel>
                                     <TextBlock Text="Scan junk files"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Foreground="{ThemeResource TextPrimaryBrush}"
                                                FontWeight="Medium" />
                                     <TextBlock Text="Find what can be removed"
                                                Style="{StaticResource CaptionStyle}" />
@@ -178,9 +167,9 @@
                                     Click="AnalyzeStorageClick">
                                 <StackPanel>
                                     <TextBlock Text="Analyze storage"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Foreground="{ThemeResource TextPrimaryBrush}"
                                                FontWeight="Medium" />
-                                    <TextBlock Text="See what's using disk space (v0.3)"
+                                    <TextBlock Text="Find large files and exact duplicates"
                                                Style="{StaticResource CaptionStyle}" />
                                 </StackPanel>
                             </Button>
@@ -189,9 +178,9 @@
                                     Click="ReviewStartupClick">
                                 <StackPanel>
                                     <TextBlock Text="Review startup"
-                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               Foreground="{ThemeResource TextPrimaryBrush}"
                                                FontWeight="Medium" />
-                                    <TextBlock Text="Startup manager coming in v0.2"
+                                    <TextBlock Text="Review what runs when you sign in"
                                                Style="{StaticResource CaptionStyle}" />
                                 </StackPanel>
                             </Button>
@@ -212,14 +201,14 @@
                     <StackPanel Grid.Column="0" Spacing="4">
                         <TextBlock Text="MACHINE" Style="{StaticResource SectionLabelStyle}" />
                         <TextBlock Text="{x:Bind ViewModel.MachineName, Mode=OneWay}"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Foreground="{ThemeResource TextPrimaryBrush}"
                                    FontWeight="Medium" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Spacing="4">
                         <TextBlock Text="OPERATING SYSTEM" Style="{StaticResource SectionLabelStyle}" />
                         <TextBlock Text="{x:Bind ViewModel.OsVersion, Mode=OneWay}"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Foreground="{ThemeResource TextPrimaryBrush}"
                                    FontWeight="Medium"
                                    TextWrapping="WrapWholeWords" />
                     </StackPanel>
@@ -227,7 +216,7 @@
                     <StackPanel Grid.Column="2" Spacing="4">
                         <TextBlock Text="PROCESSOR" Style="{StaticResource SectionLabelStyle}" />
                         <TextBlock Text="{x:Bind ViewModel.CpuName, Mode=OneWay}"
-                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   Foreground="{ThemeResource TextPrimaryBrush}"
                                    FontWeight="Medium"
                                    TextWrapping="WrapWholeWords" />
                     </StackPanel>

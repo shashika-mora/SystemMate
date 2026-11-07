@@ -5,8 +5,8 @@
 
     <!-- Metric card (Dashboard) -->
     <Style x:Key="MetricCardStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Padding" Value="20,16" />
@@ -14,8 +14,8 @@
 
     <!-- General content card -->
     <Style x:Key="ContentCardStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+        <Setter Property="Background" Value="{ThemeResource CardBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Padding" Value="24,20" />
@@ -23,9 +23,9 @@
 
     <!-- Quick action button -->
     <Style x:Key="QuickActionButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="#FF1E2235" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+        <Setter Property="Background" Value="{ThemeResource ControlFillBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="16,12" />
@@ -35,8 +35,8 @@
 
     <!-- Primary accent button -->
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource AccentBlueBrush}" />
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="{ThemeResource PrimaryButtonBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource AccentButtonForegroundBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="20,10" />
@@ -45,8 +45,8 @@
 
     <!-- Danger button -->
     <Style x:Key="DangerButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource AccentRedBrush}" />
-        <Setter Property="Foreground" Value="White" />
+        <Setter Property="Background" Value="{ThemeResource DangerButtonBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource AccentButtonForegroundBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Padding" Value="20,10" />

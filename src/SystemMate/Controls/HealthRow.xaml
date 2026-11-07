@@ -8,6 +8,38 @@
     mc:Ignorable="d">
 
     <Grid ColumnSpacing="12">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="HealthStates">
+                <VisualState x:Name="Good">
+                    <VisualState.Setters>
+                        <Setter Target="StatusDot.Fill" Value="{ThemeResource AccentGreenBrush}" />
+                        <Setter Target="StatusIcon.Foreground" Value="{ThemeResource AccentGreenBrush}" />
+                        <Setter Target="StatusIcon.Symbol" Value="Accept" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Warning">
+                    <VisualState.Setters>
+                        <Setter Target="StatusDot.Fill" Value="{ThemeResource AccentAmberBrush}" />
+                        <Setter Target="StatusIcon.Foreground" Value="{ThemeResource AccentAmberBrush}" />
+                        <Setter Target="StatusIcon.Symbol" Value="Important" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Error">
+                    <VisualState.Setters>
+                        <Setter Target="StatusDot.Fill" Value="{ThemeResource AccentRedBrush}" />
+                        <Setter Target="StatusIcon.Foreground" Value="{ThemeResource AccentRedBrush}" />
+                        <Setter Target="StatusIcon.Symbol" Value="Cancel" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="Neutral">
+                    <VisualState.Setters>
+                        <Setter Target="StatusDot.Fill" Value="{ThemeResource TextMutedBrush}" />
+                        <Setter Target="StatusIcon.Foreground" Value="{ThemeResource TextMutedBrush}" />
+                        <Setter Target="StatusIcon.Symbol" Value="Help" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="10" />
             <ColumnDefinition Width="*" />
@@ -18,11 +50,11 @@
         <Ellipse Width="8" Height="8"
                  x:Name="StatusDot"
                  VerticalAlignment="Center"
-                 Fill="{StaticResource AccentGreenBrush}" />
+                 Fill="{ThemeResource AccentGreenBrush}" />
 
         <StackPanel Grid.Column="1">
             <TextBlock x:Name="LabelText"
-                       Foreground="{StaticResource TextPrimaryBrush}"
+                       Foreground="{ThemeResource TextPrimaryBrush}"
                        FontWeight="Medium" />
             <TextBlock x:Name="DetailText"
                        Style="{StaticResource CaptionStyle}" />
@@ -31,7 +63,7 @@
         <SymbolIcon Grid.Column="2"
                     x:Name="StatusIcon"
                     Symbol="Accept"
-                    Foreground="{StaticResource AccentGreenBrush}"
+                    Foreground="{ThemeResource AccentGreenBrush}"
                     VerticalAlignment="Center" />
     </Grid>
 </UserControl>

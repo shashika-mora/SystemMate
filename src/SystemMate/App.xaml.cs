@@ -18,6 +18,7 @@ public partial class App : Application
 
     public App()
     {
+        UnhandledException += (_, args) => DiagnosticsService.LogException(args.Exception);
         this.InitializeComponent();
     }
 

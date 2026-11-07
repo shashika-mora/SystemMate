@@ -48,5 +48,6 @@ Tweak-LK/
 !.workspace/templates/
 !.workspace/templates/**
 !.workspace/logs/
+.workspace/logs/*
 !.workspace/logs/README.md
 !.workspace/logs/activity-template.md

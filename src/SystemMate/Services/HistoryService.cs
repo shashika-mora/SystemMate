@@ -62,6 +62,16 @@ public class HistoryService : IDisposable
     // ── Write ────────────────────────────────────────────────────────────────
 
     public void LogOperation(OperationRecord record)
+        => InsertOperation(record);
+
+    /// <summary>Persist an attempted operation before touching the file. Failure must prevent deletion.</summary>
+    public virtual void BeginOperation(OperationRecord record)
+    {
+        record.Status = OperationStatus.Pending;
+        InsertOperation(record);
+    }
+
+    private void InsertOperation(OperationRecord record)
     {
         using var conn = new SqliteConnection(_connectionString);
         conn.Open();
@@ -80,6 +90,26 @@ public class HistoryService : IDisposable
         cmd.Parameters.AddWithValue("$status",       record.Status.ToString());
         cmd.Parameters.AddWithValue("$errorMessage", record.ErrorMessage ?? (object)DBNull.Value);
         cmd.ExecuteNonQuery();
+        cmd.CommandText = "SELECT last_insert_rowid()";
+        record.Id = checked((int)(long)cmd.ExecuteScalar()!);
+    }
+
+    /// <summary>Replace the pending status in the same row with the observed outcome.</summary>
+    public virtual void CompleteOperation(OperationRecord record)
+    {
+        using var conn = new SqliteConnection(_connectionString);
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = """
+            UPDATE CleanupOperations SET Status = $status, ErrorMessage = $error
+            WHERE Id = $id AND SessionId = $sessionId
+            """;
+        cmd.Parameters.AddWithValue("$status", record.Status.ToString());
+        cmd.Parameters.AddWithValue("$error", record.ErrorMessage ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("$id", record.Id);
+        cmd.Parameters.AddWithValue("$sessionId", record.SessionId);
+        if (cmd.ExecuteNonQuery() != 1)
+            throw new InvalidOperationException("The cleanup intent could not be updated; cleanup was stopped.");
     }
 
     // ── Read ─────────────────────────────────────────────────────────────────
@@ -114,7 +144,7 @@ public class HistoryService : IDisposable
                 var sessionId = reader.GetString(0);
                 var timestamp = DateTime.Parse(reader.GetString(1));
                 var status = Enum.TryParse<OperationStatus>(reader.GetString(5), out var s)
-                    ? s : OperationStatus.Deleted;
+                    ? s : OperationStatus.Error;
 
                 if (!sessions.TryGetValue(sessionId, out var session))
                 {
@@ -147,6 +177,10 @@ public class HistoryService : IDisposable
                 else if (status == OperationStatus.Skipped)
                 {
                     session.FilesSkipped++;
+                }
+                else if (status == OperationStatus.Pending)
+                {
+                    session.FilesPending++;
                 }
                 else
                 {

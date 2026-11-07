@@ -41,11 +41,17 @@ public sealed partial class DashboardPage : Page
     }
 
     private void ScanJunkClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-        => Frame.Navigate(typeof(CleanerPage));
+        => (App.MainWindow as MainWindow)?.NavigateTo("cleaner");
 
     private void AnalyzeStorageClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    { /* v0.3 */ }
+        => (App.MainWindow as MainWindow)?.NavigateTo("storage");
 
     private void ReviewStartupClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
-    { /* v0.2 */ }
+        => (App.MainWindow as MainWindow)?.NavigateTo("startup");
+
+    private void ExploreClick(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        if (sender is Microsoft.UI.Xaml.FrameworkElement { Tag: string tag })
+            (App.MainWindow as MainWindow)?.NavigateTo(tag);
+    }
 }

@@ -13,6 +13,8 @@ public sealed class SystemInfoService : IDisposable
 {
     private PerformanceCounter? _cpuCounter;
     private bool _disposed;
+    private readonly Lazy<(string os, string machine, string cpu)> _staticInfo = new(GetStaticInfo);
+    private readonly Lazy<DateTime> _lastBootTime = new(GetLastBootTime);
 
     public SystemInfoService()
     {
@@ -35,8 +37,8 @@ public sealed class SystemInfoService : IDisposable
             var cpu = GetCpuUsage();
             GetMemoryStatus(out var ramUsed, out var ramTotal);
             GetDiskInfo(out var diskUsed, out var diskTotal);
-            var bootTime = GetLastBootTime();
-            var (osVersion, machineName, cpuName) = GetStaticInfo();
+            var bootTime = _lastBootTime.Value;
+            var (osVersion, machineName, cpuName) = _staticInfo.Value;
 
             return new SystemSnapshot
             {
